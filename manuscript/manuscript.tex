@@ -97,10 +97,10 @@ distribution function of the sample, where $I(\cdot)$ is the indicator
 function. The KS test statistic is
 \begin{equation}
   \label{eq:ks_standard}
-  D_n = \sup_x | F_{n}(x) - F(x) |.
+  D_n = \sqrt{n} \sup_x | F_{n}(x) - F(x) |.
 \end{equation}
 The asymptotic distribution of $D_n$ under $H_0$ is independent of the
-distribution $F$. As $n \to \infty$, $\sqrt{n} D_n$ converges in distribution to
+distribution~$F$. As $n \to \infty$, $D_n$ converges in distribution to
 the supremum of standard Brownian bridge \citep{kolmogorov1933sulla}. For large
 samples, the tests can be performed with a table \citep{smirnov1948table}.
 Critical values for small samples ($n \le 35$) has also been given
@@ -181,98 +181,100 @@ Section~\ref{sec:conclusion} concludes with a discussion.
 \section{Unspecified Parameters}
 \label{sec:fitted}
 
-The null distribution of the KS statistic changes when the hypothesized
-distribution contains fitted parameters.
-\eds{what is the null distribution when not using fitted parameters}.
-In this scenario, the null hypothesis
-is $H_0$: the random sample $X_1, \ldots, X_n$ comes from a continuous
-distribution $F_{\theta}$ with unspecified parameter vector $\theta$.
-Let $\hat\theta_n$ be an estimator of $\theta$, which could be, for example, a
-maximum likelihood estimator or moment estimator. The test statistic is
+The null hypothesis of a goodness-of-fit test is often a composite hypothesis
+instead of a single hypothesis. That is, the hypothesized distribution is a
+family of distributions with unspecified parameters instead of a specific member
+in this family. Let $F_\theta$ be a family of distributions indexed by parameter
+vector~$\theta$. The null hypothesis is
+\[
+  H_0: \text{the random sample $X_1, \ldots, X_n$
+    comes from a distribution $F_\theta$ with some $\theta$.}
+\]
+Since $\theta$ is unknown, one would naturally estimate $\theta$ by
+$\hat\theta_n$ from, for example, maximum likelihood or methods of moments. The
+KS statistic would then be computed as
 \begin{equation}
   \label{eq:ks_fitted}
-  D = \sup_x | F_n(x) - F_{\hat\theta_n}(x) |.
+  D_n = \sqrt{n} \sup_x | F_n(x) - F_{\hat\theta_n}(x) |.
 \end{equation}
-Since $F_{\hat\theta_n}$ is not the same as the true data generating
-$F_\theta$, the null distribution of $D$ obtained in existing implementations in
-software packages which assumes completely known $F_\theta$ no longer applies
-\citep{Steinskog}.
+An overly large $D_n$ still indicates evidence to reject~$H_0$. To get the
+p-value of the observed $D_n$, however, the null distribution is not the same as the
+of $D_n$, however, is no longer the same as that in the standard
+case~\eqref{eq:ks_standard}. If the same null distribution were used, one would
+be testing a different $H_0$ that the random sample comes from the specific
+member distribution $F_{\hat\theta}$.
 
 
-To demonstrate the consequences of this problem, a simulation is performed. A
-random sample $X_1, \ldots, X_n$ is generated from the standard normal
-distribution with sample size $n = 100$. The p-values of $1000$ replicate tests
- of normality
-are displayed in the Naive plot of Figure~\ref{fig:hist_fitted}.
-\eds{how are these p-values calculated?}
-Each KS test
-was performed using fitted parameters, i.e., the hypothesized distribution is
+The consequence of using the wrong null distribution for the KS statistic $D_n$
+in~\eqref{eq:ks_fitted} can be illustrated through a simple simulation study. A
+random sample $X_1, \ldots, X_n$ was generated from the standard normal
+distribution with sample size $n = 100$. The sample mean and sample standard
+deviation were used as $\hat\theta_n$. The p-value of the testing
+statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
+\texttt{ks.test} function in~R with the fitted normal distribution as the
+hypothesized distribution. That is, the hypothesized distribution was
 $N(\bar X, s^2)$ where $\bar X$ is the sample mean and $s^2$ is the sample
-variance. Since the data is truly generated from a standard normal distribution,
- %with
-%seemingly all assumptions met,
-a uniform distribution of $U(0, 1)$ would naively be expected for the p-values.
-However this should only be expected when the KS test assumptions hold, and they
- do not due to using fitted parameters. Therefore,
-there is notable deviation from the uniform distribution.
+variance. This experiment was repeated for 1000 times and the histogram of the
+1000 p-values are displayed in Figure~\ref{fig:hist_fitted}. If the test were
+valid, the p-values would be uniformly distributed in the unit
+interval. Clearly, the pattern of the 1000 p-values are very different from what
+one would expect to see from a 1000 draws from the standard uniform
+distribution.
 
 
 To fix the problem, parametric bootstrap can be used to approximate the null
-distribution of the testing statistic.
+distribution of the testing statistic~$D_n$. For a large number~$B$, the
+parametric bootstrap procedure is as follows.
 \begin{enumerate}
-  \item
-    Draw a random sample $X_1^*,...,X_n^*$ from the fitted distribution
-    $F_{\hat\theta_n}$
-  \item
-    Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
-  \item
-    Obtain the empirical distribution function $F_n^*$ of $X_1^*, \ldots,
-    X_n^*$.
-  \item
-    Calculate bootstrap KS statistic
-    \[
-      D^* = \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) |.
-    \]
-  \item
-    Repeat the previous steps a large number $B$ times and use the empirical
-    distribution of $D^*$ to approximate the null distribution of the observed
-    statistic.
+\item
+  Draw a random sample $X_1^*,...,X_n^*$ from the fitted distribution
+  $F_{\hat\theta_n}$
+\item
+  Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
+\item
+  Obtain the empirical distribution function $F_n^*$ of
+  $X_1^*, \ldots,  X_n^*$.
+\item
+  Calculate bootstrap KS statistic
+  \[
+    D_n^* = \sqrt{n} \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) |.
+  \]
+\item
+  Repeat the previous steps $B$ times and use the empirical
+  distribution of $D^*$ to approximate the null distribution of the observed
+  statistic.
 \end{enumerate}
+The p-value of $D_n$ is approximated by the proportion of $D_n^*$'s that are
+greater than or equal to~$D_n$.
 
 
 Nonparametric bootstrap can also be used to approximate the null distribution
-of the testing statistic. The procedure is similar, however the resampling is
-performed with the empirical distribution instead of the fitted parametric
-distribution and there is a correction for bias that is required
-\citep{Babu}.
+of the testing statistic with the bias correction from \citet{Babu}. The
+procedure is as follows.
 \begin{enumerate}
-  \item
-    Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
-    with replacement
-  \item
-    Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
-  \item
-    Obtain the empirical distribution function of the random sample $F_n^*$
-  \item
-    Calculate bootstrap KS statistic
-    \[
-      D^* = \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) - B_n(x) |.
-    \]
-    where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
-    bias term \citep{Babu}
-  \item
-    Repeat the previous steps a large number $B$ times and use the empirical
-    distribution of $D^*$ to approximate the null distribution of the observed
-    statistic.
+\item
+  Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
+  with replacement
+\item
+  Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
+\item
+  Obtain the empirical distribution function of the random sample $F_n^*$
+\item
+  Calculate bootstrap KS statistic
+  \[
+    D^* = \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) - B_n(x) |.
+  \]
+  where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
+  bias term \citep{Babu}
+\item
+  Repeat the previous steps a large number $B$ times and use the empirical
+  distribution of $D^*$ to approximate the null distribution of the observed
+  statistic.
 \end{enumerate}
-The p-value can be calculated by counting the number of bootstrap KS
-statistics greater than or equal to the observed KS statistic, and then dividing
-by the number of bootstrap samples. Figure~\ref{fig:hist_fitted} displays the
-results of from our simulations. We would expect the distribution of p-values
-to be uniform in the case where the KS test holds its size. It is clear from the
-figure that both parametric and nonparametric bootstrap processes correct for
-the problem of fitted parameters. The plots for the bootstrapped p-values appear
-to be $U(0,1)$, unlike the naive p-values.
+The p-value of $D_n$ is, again, approximated by the proportion of $D_n^*$'s that
+are greater than or equal to~$D_n$.
+
+
 
 \begin{figure}[tbp]
   \centering
@@ -288,6 +290,12 @@ to be $U(0,1)$, unlike the naive p-values.
   \label{fig:hist_fitted}
 \end{figure}
 
+In the same simulation study, p-values were obtained for the 1000 replicates
+with both the parametric and nonparametric bootstrap procedures. The center and
+right panels of Figure~\ref{fig:hist_fitted} display the histograms of the 1000
+p-values from the parametric and nonparametric bootstrap procedures,
+respectively. This time, both samples of the p-values appear to come from the
+standard uniform distributions.
 
 \section{Serially Dependent Data}
 \label{sec:dependence}
