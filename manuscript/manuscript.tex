@@ -64,7 +64,7 @@
 
 \begin{abstract}
 The Kolmogorov--Smirnov (KS) test is one of the most popular goodness-of-fit
-tests for comparing a sample with a hypothesized parametric distribution.
+tests for comparing a sample with a hypothesized continuous distribution.
 Nevertheless, it has often been misused. The standard one-sample KS test applies
 to independent, continuous data with a hypothesized distribution that is
 completely specified. It is not uncommon, however, to see in the literature that
@@ -80,9 +80,9 @@ three scenarios through simulation studies:
 For each scenario, we provide remedies for practical applications.
 
 \bigskip
-\noindent\sc{Keywords}:
+\noindent{\sc Keywords}:
 nonparametric bootstrap;
-parametric bootstrap;
+parametric bootstrap.
 \end{abstract}
 
 \section{Introduction}
@@ -122,41 +122,36 @@ companion R package \textsf{KSgeneral}. Although a common misuse of KS test, the
 issue with discontinuous or data is not our focus.
 
 
-The standard KS test is not applicable when the hypothesized distribution
-contains fitted parameters. \citet{Steinskog} ``discovers'' the change in power
-when using estimated parameters and stresses caution in using the KS test in
-such ways. In fact, \citet{Lilliefors} shows for the normal distribution that using the
-standard table when values of the mean and standard deviation are estimated
-yields extremely conservative results.
-% JY: this paper set up a wrong target; they didn't even cite bootstrap!
-% This is supported by \citet{Capasso},
-% who concludes that failing to re-estimate the parameters may lead to wrong,
-% overly-conservative approximations to the distributions of goodness-of-fit test
-% statistics based on the empirical distribution function. \citet{Capasso} also
-% notes that the impact of this mistake may turn out to be dramatic and does not
-% vanish as the sample size increases.
-This problem can be solved by parametric bootstrap \citep{Efron}, where
+When the hypothesized distribution contains fitted parameters, as is the case in
+most goodness-of-fit test settings, the standard KS test is not applicable.
+\citet{Steinskog} ``discovers'' the change in power
+when using fitted parameters and stresses caution in using the KS test in
+such ways. In fact, using fitted parameters in place of the true parameters in
+KS test is long known to yield extremely conservative results
+\citep[e.g.,][]{Lilliefors}. This problem can be solved by parametric
+bootstrap \citep{efron1985bootstrap, hall1991two}, where
 bootstrap samples of the testing statistics are constructed from samples
 generated from the fitted hypothesized distribution. A nonparametric bootstrap
 solution is not trivial because the a nonparametric bootstrap sample of the
-observed data have ties, which would not happen for continuous distribution.
-A nonparametric remedy was provided by \citet{Babu}, who derived the bias and
+observed data have ties, which would not happen for continuous distributions.
+\citet{Babu} derived the bias of standard nonparametric bootstrap and
 showed how to correct it. They further noted that both parametric and
 non-parametric procedures lead to correct asymptotic levels.
-% JY: Genest at al is not about our setting. \citet{Genest} provides
-% validity for using parametric bootstrap with various goodness-of-fit tests.
 
 
-The standard KS test does not apply to serially dependent data either. For
-testing normality, \citet{Durilleul} demonstrated that a naive application of
+The standard KS test does not apply to serially dependent data either. The
+distribution of the KS statistic would have a higher variance for positively
+dependent data than that derived when the data are independent because of a
+smaller effective sample size. For example, for
+testing normality, \citet{Durilleul} demonstrates that a naive application of
 the KS statistic is too liberal for medium-to-high positive serieal dependence,
 and that for negative dependence, the behavior is asymmetrical. For remedies,
 \citet{Weiss} provides a procedure that is applicable specifically for data
 modeled by the second-order auto-regressive (AR) process where the AR parameters
 are known. \citet{Lanzante} tests various strategies for dealing with temporal
 dependence and concludes that a test based on Monte-Carlo simulations performed
-the best. \jy{need some sentences to elaborate the issue and identify a gap in
-  the literature.}
+the best. When additionally the hypothesized distribution contains unknown
+parameters, the standard KS test becomes even further inapplicable.
 
 
 The contribution of this paper is a demonstration of misuses of the one-sample
@@ -586,3 +581,11 @@ copulas could provide stronger results based on the true dependence of the data.
 
 
 \end{document}
+%%% LocalWords: 
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% ispell-personal-dictionary: ".aspell.en.pws"
+%%% fill-column: 80
+%%% eval: (auto-fill-mode 1)
+%%% End:
