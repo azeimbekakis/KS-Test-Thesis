@@ -198,11 +198,11 @@ KS statistic would then be computed as
   D_n = \sqrt{n} \sup_x | F_n(x) - F_{\hat\theta_n}(x) |.
 \end{equation}
 An overly large $D_n$ still indicates evidence to reject~$H_0$. To get the
-p-value of the observed $D_n$, however, the null distribution is not the same as the
-of $D_n$, however, is no longer the same as that in the standard
+p-value of the observed $D_n$, however, the null distribution is not the same as
+that in the standard
 case~\eqref{eq:ks_standard}. If the same null distribution were used, one would
-be testing a different $H_0$ that the random sample comes from the specific
-member distribution $F_{\hat\theta}$.
+be testing a different~$H_0$ that the random sample comes from the specific
+member distribution~$F_{\hat\theta}$ instead of the family~$F_\theta$.
 
 
 The consequence of using the wrong null distribution for the KS statistic $D_n$
@@ -211,26 +211,25 @@ random sample $X_1, \ldots, X_n$ was generated from the standard normal
 distribution with sample size $n = 100$. The sample mean and sample standard
 deviation were used as $\hat\theta_n$. The p-value of the testing
 statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
-\texttt{ks.test} function in~R with the fitted normal distribution as the
+\texttt{ks.test()} function in~R with the fitted normal distribution as the
 hypothesized distribution. That is, the hypothesized distribution was
 $N(\bar X, s^2)$ where $\bar X$ is the sample mean and $s^2$ is the sample
 variance. This experiment was repeated for 1000 times and the histogram of the
 1000 p-values are displayed in Figure~\ref{fig:hist_fitted}. If the test were
 valid, the p-values would be uniformly distributed in the unit
 interval. Clearly, the pattern of the 1000 p-values are very different from what
-one would expect to see from a 1000 draws from the standard uniform
+one would expect to see from 1000 draws from the standard uniform
 distribution.
 
 
 To fix the problem, parametric bootstrap can be used to approximate the null
-distribution of the testing statistic~$D_n$. For a large number~$B$, the
-parametric bootstrap procedure is as follows.
+distribution of the testing statistic~$D_n$:
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the fitted distribution
   $F_{\hat\theta_n}$
 \item
-  Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
+  Fit $F_\theta$ to the sample and obtain estimate $\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of
   $X_1^*, \ldots,  X_n^*$.
@@ -240,7 +239,7 @@ parametric bootstrap procedure is as follows.
     D_n^* = \sqrt{n} \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) |.
   \]
 \item
-  Repeat the previous steps $B$ times and use the empirical
+  Repeat the previous steps a large number~$B$ times and use the empirical
   distribution of $D^*$ to approximate the null distribution of the observed
   statistic.
 \end{enumerate}
@@ -249,14 +248,13 @@ greater than or equal to~$D_n$.
 
 
 Nonparametric bootstrap can also be used to approximate the null distribution
-of the testing statistic with the bias correction from \citet{Babu}. The
-procedure is as follows.
+of the testing statistic with the bias correction from \citet{Babu}:
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
   with replacement
 \item
-  Fit $F_\theta$ to the sample and obtain estimated $\hat\theta_n^*$
+  Fit $F_\theta$ to the sample and obtain estimate $\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function of the random sample $F_n^*$
 \item
@@ -289,6 +287,9 @@ are greater than or equal to~$D_n$.
 	freq. hist (here and elsewhere)?}}
   \label{fig:hist_fitted}
 \end{figure}
+
+\jy{Anthony, could you label the panels as ``Parametric bootstrap'' and
+  ``Nonparametric bootstrap'' for the center and right panels?}
 
 In the same simulation study, p-values were obtained for the 1000 replicates
 with both the parametric and nonparametric bootstrap procedures. The center and
