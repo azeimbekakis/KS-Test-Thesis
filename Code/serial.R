@@ -31,6 +31,7 @@ ks.sb <- function(x, B = 1000) {
     for (i in 1:B) {
         u <- runif(n)
         x.b <- qnorm(sort(u)[rk])
+        ## The ks stat remained the same as the one before sorting
         stat.b[i] <- ks.test(x.b, pnorm)$statistic
     }
     p.value <-  (sum(stat.b >= stat) + 0.5) / (B + 1)
