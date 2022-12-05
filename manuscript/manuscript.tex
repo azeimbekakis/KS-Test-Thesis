@@ -260,7 +260,7 @@ of the testing statistic with the bias correction from \citet{babu2004goodness}:
 \item
   Calculate bootstrap KS statistic
   \[
-    D^* = \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) - B_n(x) |.
+    D^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n}^*(x)\right) - B_n(x) |.
   \]
   where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
   bias term \citep{babu2004goodness}
