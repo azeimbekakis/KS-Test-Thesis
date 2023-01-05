@@ -1582,7 +1582,11 @@ qdist <- function(u) qgamma(u, shape = shape, scale = scale)
 pdist <- function(u) pgamma(u, shape = shape, scale = scale)
 working <- "auto"
 counter <- 0
-pvals_autoarma <- replicate(nrep, test_autoarma(x = genData(n, phi, theta, qdist), pdist = pdist, qdist = qdist, B = 1000, working = working)$p.value)
+pvals_autoarma <- replicate(nrep, test_autoarma(x = genData(n, phi, theta, qdist), 
+                                                   pdist = pdist, 
+                                                   qdist = qdist, 
+                                                   B = 1000, 
+                                                   working = working)$p.value)
 counter <- 0
 pvals_naive <- replicate(nrep, test_standard_ks(genData(n, phi, theta, qdist),
                                                    pdist = pgamma,
@@ -1590,7 +1594,7 @@ pvals_naive <- replicate(nrep, test_standard_ks(genData(n, phi, theta, qdist),
                                                    scale = scale)$p.value)
 
 # Create a master data_frame with all the results
-histogram <- c(rep("Autoarma", n_tests), rep("Naive", n_tests))
+histogram <- c(rep("Autoarma", nrep), rep("Naive", nrep))
 p_values <- c(pvals_autoarma, pvals_naive)
 results <- data_frame(p_values, histogram)
 
