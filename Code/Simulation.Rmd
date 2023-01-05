@@ -96,8 +96,8 @@ test_naive <- function(x) {
 }
 
 # Generate results
-n_tests = 1000
-n = 100
+n_tests <- 1000
+n <- 100
 counter <- 0
 pvals_parametric <- replicate(n_tests, test_parametric(rnorm(n), B = 1000)$p.value)
 counter <- 0
@@ -1559,3 +1559,60 @@ hist_gamma_gev_D2
 
 ggsave(filename = "hist_gamma_gev_D2.pdf", plot = hist_gamma_gev_D2, path = "../Manuscript", height = 4.2, width = 6)
 ```
+
+
+```{r Autoarma}
+source("autoarma.R")
+
+# Test non-parametric bootstrap as a solution to fitted parameters
+test_autoarma <- function(x, pdist, qdist, B, working) {
+  p.value <- ks.arma(x = x, pdist = pdist, qdist = qdist, B = 1000, working = working)
+  counter <<- counter + 1
+  cat(counter, "")
+  list(p.value = p.value)
+}
+
+# Naive function that incorrectly uses fitted parameters for gamma distribution
+test_super_naive_autoarma <- function(x) {
+  
+  m <- mean(x)
+  v <- var(x)
+  scale <- v/m
+  shape <- m*m/v
+  
+  p.value <- ks.test(x, "pgamma", shape = shape, scale = scale)$p.value
+  list(p.value = p.value)
+}
+
+# Generate results
+n_tests = 1000
+n = 200
+phi <- .3
+theta <- .2
+qdist <- function(u) qgamma(u, shape = 3, scale = 1)
+pdist <- function(u) pgamma(u, shape = 3, scale = 1)
+working <- "auto"
+counter <- 0
+pvals_autoarma <- replicate(n_tests, test_autoarma(x = genData(n, phi, theta, qdist), pdist = pdist, qdist = qdist, B = 1000, working = working)$p.value)
+counter <- 0
+pvals_naive <- replicate(n_tests, test_super_naive_autoarma(genData(n, phi, theta, qdist))$p.value)
+
+# Create a master data_frame with all the results
+histogram <- c(rep("Autoarma", n_tests), rep("Naive", n_tests))
+p_values <- c(pvals_autoarma, pvals_naive)
+results <- data_frame(p_values, histogram)
+
+results$histogram <- factor(results$histogram, levels = c("Naive", "Autoarma"))
+
+# Generate histograms plot
+hist_autoarma <- ggplot(results) + 
+                   geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
+                   scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
+                   theme(legend.position = "none") +
+                   facet_wrap(~histogram, scales = "free_y")
+hist_autoarma
+
+# Save the histogram figure
+ggsave(filename = "hist_autoarma.pdf", plot = hist_autoarma, path = "../Manuscript", height = 2.1, width = 6)
+```
+
