@@ -1560,11 +1560,10 @@ hist_gamma_gev_D2
 ggsave(filename = "hist_gamma_gev_D2.pdf", plot = hist_gamma_gev_D2, path = "../Manuscript", height = 4.2, width = 6)
 ```
 
-
 ```{r Autoarma}
 source("autoarma.R")
 
-# Test non-parametric bootstrap as a solution to fitted parameters
+# Test autoarma as a solution to correlated data
 test_autoarma <- function(x, pdist, qdist, B, working) {
   p.value <- ks.arma(x = x, pdist = pdist, qdist = qdist, B = 1000, working = working)
   counter <<- counter + 1
@@ -1572,30 +1571,23 @@ test_autoarma <- function(x, pdist, qdist, B, working) {
   list(p.value = p.value)
 }
 
-# Naive function that incorrectly uses fitted parameters for gamma distribution
-test_super_naive_autoarma <- function(x) {
-  
-  m <- mean(x)
-  v <- var(x)
-  scale <- v/m
-  shape <- m*m/v
-  
-  p.value <- ks.test(x, "pgamma", shape = shape, scale = scale)$p.value
-  list(p.value = p.value)
-}
-
 # Generate results
-n_tests = 1000
-n = 200
+nrep <- 1000
+n <- 200
 phi <- .3
 theta <- .2
-qdist <- function(u) qgamma(u, shape = 3, scale = 1)
-pdist <- function(u) pgamma(u, shape = 3, scale = 1)
+shape <- 3
+scale <- 1
+qdist <- function(u) qgamma(u, shape = shape, scale = scale)
+pdist <- function(u) pgamma(u, shape = shape, scale = scale)
 working <- "auto"
 counter <- 0
-pvals_autoarma <- replicate(n_tests, test_autoarma(x = genData(n, phi, theta, qdist), pdist = pdist, qdist = qdist, B = 1000, working = working)$p.value)
+pvals_autoarma <- replicate(nrep, test_autoarma(x = genData(n, phi, theta, qdist), pdist = pdist, qdist = qdist, B = 1000, working = working)$p.value)
 counter <- 0
-pvals_naive <- replicate(n_tests, test_super_naive_autoarma(genData(n, phi, theta, qdist))$p.value)
+pvals_naive <- replicate(nrep, test_standard_ks(genData(n, phi, theta, qdist),
+                                                   pdist = pgamma,
+                                                   shape = shape, 
+                                                   scale = scale)$p.value)
 
 # Create a master data_frame with all the results
 histogram <- c(rep("Autoarma", n_tests), rep("Naive", n_tests))
