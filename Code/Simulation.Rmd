@@ -14,7 +14,7 @@ library(forecast)
 source('tspb.R')
 ```
 
-```{r hist_correlation}
+```{r Functions}
 # Test to show that autocorrelation changes the power of the test
 test_correlation <- function(n_tests, ars) {
   
@@ -37,22 +37,6 @@ test_correlation <- function(n_tests, ars) {
   return(ar_results)
 }
 
- # Set AR coefficients and generate results
-ars <- seq(-0.3, 0.3, by = 0.1)
-ar_results <- test_correlation(1000, ars)
-
-# Generate histograms plot
-hist_correlation <- ggplot(ar_results) + 
-                    geom_histogram(aes(x = p_value, fill = ar), boundary = 0, binwidth = 1/20) + 
-                    facet_grid(~ar) +
-                    theme(legend.position = "none") +
-                    scale_x_continuous(name = "p-value", breaks=c(0, 1))
-
-# Save the histogram figure
-ggsave(filename = "hist_correlation.pdf", plot = hist_correlation, path = "../Manuscript", height = 2.1, width = 6)
-```
-
-```{r Parametric}
 # Test parametric bootstrap as a solution to fitting parameters
 test_parametric <- function(x, B = 1000) {
   
@@ -95,34 +79,6 @@ test_naive <- function(x) {
   list(p.value = p.value)
 }
 
-# Generate results
-n_tests <- 1000
-n <- 100
-counter <- 0
-pvals_parametric <- replicate(n_tests, test_parametric(rnorm(n), B = 1000)$p.value)
-counter <- 0
-pvals_babu <- replicate(n_tests, test_babu(rnorm(n), B = 1000)$p.value)
-pvals_naive <- replicate(n_tests, test_naive(rnorm(n))$p.value)
-
-# Create a master data_frame with all the results
-histogram <- c(rep("Parametric", n_tests), rep("Babu", n_tests), rep("Naive", n_tests))
-p_values <- c(pvals_parametric, pvals_babu, pvals_naive)
-results <- data_frame(p_values, histogram)
-
-results$histogram <- factor(results$histogram, levels = c("Naive", "Parametric", "Babu"))
-
-# Generate histograms plot
-hist_fitted <- ggplot(results) + 
-                   geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
-                   scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
-                   theme(legend.position = "none") +
-                   facet_wrap(~histogram, scales = "free_y")
-
-# Save the histogram figure
-ggsave(filename = "hist_fitted.pdf", plot = hist_fitted, path = "../Manuscript", height = 2.1, width = 6)
-```
-
-```{r babu}
 ecdf.leftcont <- function (x) {
     x <- sort(x)
     n <- length(x)
@@ -166,9 +122,7 @@ ks.np.babu <- function(x, B = 1000) {
     list(p.value = p.value,
          statistic = stat, stat.b = stat.b)
 }
-```
 
-```{r gen_data}
 ## generating observations from a specified distribution with serial dependence
 genData <- function(n, qdist, ..., copula, rho) {
     ## n: sample size
@@ -183,9 +137,7 @@ genData <- function(n, qdist, ..., copula, rho) {
     }
     qdist(u, ...)
 }
-```
 
-```{r AR(1) D}
 test_copula_D <- function(x, pdist, qdist, ..., B, wcopula = normalCopula) {
 
     # Get observed statistic
@@ -231,6 +183,430 @@ test_standard_ks <- function(x, pdist, ...) {
   list(p.value = p.value)
 }
 
+test_copula_FD <- function(x, dist, B) {
+
+    # Get observed statistic
+    n <- length(x)
+    mu <- mean(x)
+    sigma <- sd(x)
+    stat  <- ks.test(x, dist, mean = mu, sd = sigma)$statistic
+    
+    # Get lag-1 sample auto-spearman rho
+    rho  <-  cor(x[-1], x[-n], method = "spearman")
+    r <- iRho(normalCopula(), rho)
+    np <- normalCopula(r)
+    
+    # Perform parametric bootstrap to get an empirical distribution of stat
+    stat.b <- double(n)
+    
+    for (i in 1:B) {
+        # 1. The marginal distribution is the fitted dist
+        # 2. There is temporal dependence
+        u <- runif(n) 
+        for (j in 2:n) {
+            u[j]  <- cCopula(c(u[j-1], u[j]), np, indices = 2, inverse = TRUE)
+        }
+        
+        # Transform bootstrap sample and fit the parameters
+        x.b <- qnorm(u, mean = mu, sd = sigma)
+        mu.b <- mean(x.b)
+        sigma.b <- sd(x.b)
+        
+        # Gather bootstrap sample's test statistic
+        stat.b[i] <- ks.test(x.b, dist, mean = mu.b, sd = sigma.b)$statistic
+    }
+    
+    # Return empirical p-value
+    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    
+    return(p.value)
+}
+
+# Super naive KS-test with fitted parameters
+test_standard_ks_F <- function(x) {
+  p.value <- ks.test(x, "pnorm", mean = mean(x), sd = sd(x))$p.value
+  list(p.value = p.value)
+}
+
+# Testing bootstrap with copulas for gamma distribution
+test_gamma_FD <- function(x, dist, B = 100, wcopula = normalCopula) {
+
+    # Get observed stat
+    n <- length(x)
+    m <- mean(x)
+    v <- var(x)
+    scale <- v/m
+    shape <- m*m/v
+    
+    stat  <- ks.test(x, dist, shape = shape, scale = scale)$statistic
+
+    # Get lag-1 sample auto-spearman rho
+    rho  <-  cor(x[-1], x[-n], method = "spearman")
+    r <- iRho(wcopula(), rho)
+    wcop <- wcopula(r)
+    
+    # Parametric bootstrap to get an empirical distribution of stat
+    stat.b <- double(n)
+    
+    for (i in 1:B) {
+        # 1. The marginal distribution is the fitted dist
+        # 2. There is temporal dependence
+        u <- runif(n)
+        for (j in 2:n) {
+            u[j]  <- cCopula(c(u[j-1], u[j]), wcop, indices = 2, inverse = TRUE)
+        }
+        
+        # Transform the bootstrap sample and fit the parameters
+        x.b <- qgamma(u, shape = shape, scale = scale)
+        
+        m.b <- mean(x.b)
+        v.b <- var(x.b)
+        scale.b <- v.b/m.b
+        shape.b <- m.b*m.b/v.b
+        
+        # Calculate new test statistic
+        stat.b[i] <- ks.test(x.b, dist, shape = shape.b, scale = scale.b)$statistic
+    }
+    
+    # Return empirical p-value    
+    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    
+    return(p.value)
+}
+
+# Parametric bootstrap to solve fitted parameters for gamma distribution
+test_parametric_gamma <- function(x, B = 1000) {
+  
+  # Summarize parameters
+  m <- mean(x)
+  v <- var(x)
+  scale <- v/m
+  shape <- m*m/v
+  
+  # Store KS statistic from using fitted parameters
+  stat <- ks.test(x, "pgamma", shape = shape, scale = scale)$statistic
+  
+  # Parametric bootstrap to approximate the null distribution
+  n <- length(x)
+  stat.b <- double(B)
+  for (i in 1:B) {
+    x.b <- rgamma(n, shape = shape, scale = scale)
+    
+    m.b <- mean(x.b)
+    v.b <- var(x.b)
+    
+    scale.b <- v.b/m.b
+    shape.b <- m.b*m.b/v.b
+    
+    stat.b[i] <- ks.test(x.b, "pgamma", shape = shape.b, scale = scale.b)$statistic
+  }
+  
+  # Return empirical p-value
+  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+
+  counter <<- counter + 1
+  cat(counter, "")
+  list(p.value = p.value)
+}
+
+# Naive function that incorrectly uses fitted parameters for gamma distribution
+test_super_naive_gamma <- function(x) {
+  
+  m <- mean(x)
+  v <- var(x)
+  scale <- v/m
+  shape <- m*m/v
+  
+  p.value <- ks.test(x, "pgamma", shape = shape, scale = scale)$p.value
+  list(p.value = p.value)
+}
+
+# Testing bootstrap with copulas for GEV distribution
+test_gev_FD <- function(x, B = 100, wcopula = normalCopula) {
+  
+    n <- length(x)
+    
+    # Get observed stat
+    fit <- gev.fit(x, show = FALSE)
+    loc <- fit$mle[1]
+    scale <- fit$mle[2]
+    shape <- fit$mle[3]
+    
+    stat  <- ks.test(x, 'pgev', loc = loc, scale = scale, shape = shape)$statistic
+    
+    # Get lag-1 sample auto-spearman rho
+    rho  <-  cor(x[-1], x[-n], method = "spearman")
+    r <- iRho(wcopula(), rho)
+    wcop <- wcopula(r)
+    
+    # Parametric bootstrap to get an empirical distribution of stat
+    stat.b <- double(n)
+
+    for (i in 1:B) {
+        # 1. The marginal distribution is the fitted dist
+        # 2. There is temporal dependence
+        u <- runif(n)
+        for (j in 2:n) {
+            u[j]  <- cCopula(c(u[j-1], u[j]), wcop, indices = 2, inverse = TRUE)
+        }
+
+        # Transform the bootstrap sample and fit the parameters
+        x.b <- qgev(u, loc = loc, scale = scale, shape = shape)
+        
+        fit.b <- gev.fit(x.b, show = FALSE)
+        loc.b <- fit.b$mle[1]
+        scale.b <- fit.b$mle[2]
+        shape.b <- fit.b$mle[3]
+        
+        # Calculate bootstrap test statistic
+        stat.b[i] <- ks.test(x.b, 'pgev', loc = loc.b, scale = scale.b, shape = shape.b)$statistic
+    }
+    
+    # Return empirical p-value    
+    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    
+    return(p.value)
+}
+
+# Parametric bootstrap to solve fitted parameters for GEV distribution
+test_parametric_gev <- function(x, B = 1000) {
+  
+  # Summarize parameters
+  fit <- gev.fit(x, show = FALSE)
+  loc <- fit$mle[1]
+  scale <- fit$mle[2]
+  shape <- fit$mle[3]
+  
+  # Store KS statistic from using fitted parameters
+  stat <- ks.test(x, "pgev", loc = loc, scale = scale, shape = shape)$statistic
+  
+  # Parametric bootstrap to approximate the null distribution
+  n <- length(x)
+  stat.b <- double(B)
+  for (i in 1:B) {
+    x.b <- rgev(n, loc = loc, scale = scale, shape = shape)
+    
+    fit.b <- gev.fit(x.b, show = FALSE)
+    loc.b <- fit.b$mle[1]
+    scale.b <- fit.b$mle[2]
+    shape.b <- fit.b$mle[3]
+    
+    stat.b[i] <- ks.test(x.b, "pgev", loc.b, shape = shape.b, scale = scale.b)$statistic
+  }
+  
+  # Return empirical p-value
+  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+
+  counter <<- counter + 1
+  cat(counter, "")
+  list(p.value = p.value)
+}
+
+# Naive function that incorrectly uses fitted parameters for GEV distribution
+test_super_naive_gev <- function(x) {
+  
+  fit <- gev.fit(x, show = FALSE)
+  loc <- fit$mle[1]
+  scale <- fit$mle[2]
+  shape <- fit$mle[3]
+    
+  p.value <- ks.test(x, "pgev", loc = loc, scale = scale, shape = shape)$p.value
+  list(p.value = p.value)
+}
+
+test_copula_D2 <- function(x, pdist, qdist, ..., B) {
+
+    ## Get observed statistic
+    n <- length(x) 
+    stat  <- ks.test(x, pdist, ...)$statistic
+    
+    ## transform the data to standard normal scale and fit arma(1,1)
+    zx <- qnorm(rank(x) / (n + 1))
+    
+    fit <- tseries::arma(zx, include.intercept = FALSE)
+    ar <- fit$coef[1]
+    ma <- fit$coef[2]
+
+    ## Perform parametric bootstrap to get an empirical distribution of stat
+    stat.b <- double(n)
+    
+    for (i in 1:B) {
+        ## 1. The marginal distribution is the fitted dist
+        ## 2. There is arma(1,1) dependence on the normal scale
+        zx.b <- arima.sim(list(ar = ar, ma = ma), 
+                          rand.gen=rnorm,
+                          sd = sqrt((1-(ar^2))/(1+2*ar*ma+ma^2)),
+                          n = n) # simulate from fit
+        u <- pnorm(zx.b)
+        # Transform bootstrap sample and fit the parameters
+        x.b <- qdist(u, ...)
+        
+        # Gather bootstrap sample's test statistic
+        stat.b[i] <- ks.test(x.b, pdist, ...)$statistic
+    }
+    
+    # Return empirical p-value
+    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    
+    return(p.value)
+}
+
+# Test autoarma as a solution to correlated data
+test_autoarma_D <- function(x, pdist, qdist, B, working) {
+  p.value <- ks.arma(x = x, pdist = pdist, qdist = qdist, B = 1000, working = working)
+  counter <<- counter + 1
+  cat(counter, "")
+  list(p.value = p.value)
+}
+
+test_autoarma_FD_Gamma <- function(x, pdist, qdist, B = 1000, working=c("auto", "2,2")) {
+    z <- qnorm(pdist(x))
+    
+    n <- length(x)
+    m <- mean(x)
+    v <- var(x)
+    scale <- v/m
+    shape <- m*m/v
+    
+    stat  <- ks.test(x, "pgamma", shape = shape, scale = scale)$statistic
+    
+    if (working == "auto") {
+        fit <- forecast::auto.arima(z, ic = "aic", max.d = 0, max.D = 0, allowmean = FALSE)
+        ## stepwise=FALSE, approximation=FALSE)
+        ## working model: p.max = q.max = 5
+    } else {
+        pq <- as.numeric(unlist(strsplit(working, ",")))
+        fit <- arima(z, order = c(pq[1], 0, pq[2]), include.mean = FALSE) ## working arma(2, 2)
+    }
+    model <- list(ar = fit$model$phi, ma = fit$model$theta)
+
+    ## theoretical variance of arma; note the negative sign of theta; McLeod (1975)
+    sigma <- sqrt(ltsa::tacvfARMA(phi = model$ar, theta = - model$ma, maxLag = 0))
+    
+    stat.b <- rep(0, B)
+    for (i in 1:B) {
+        z.b <- arima.sim(model, n = n)
+        ##   arma(1, 1) only: sd = sqrt (1 - ophi^2) / (1 + 2 * phi * theta + theta^2))
+        x.b <- qgamma(pnorm(z.b, mean = 0, sd = sigma), shape = shape, scale = scale)
+        
+        m.b <- mean(x.b)
+        v.b <- var(x.b)
+        scale.b <- v.b/m.b
+        shape.b <- m.b*m.b/v.b
+        
+        # Calculate new test statistic
+        stat.b[i] <- ks.test(x.b, "pgamma", shape = shape.b, scale = scale.b)$statistic
+    }
+    p.value <- mean(stat.b >= stat)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    list(p.value = p.value)
+}
+
+test_autoarma_FD_AR2 <- function(x, pdist, qdist, B = 1000, working=c("auto", "2,2")) {
+    z <- qnorm(pdist(x))
+    
+    # Get observed statistic
+    n <- length(x)
+    mu <- mean(x)
+    stddev <- sd(x)
+    
+    stat  <- ks.test(x, "pnorm", mean = mu, sd = stddev)$statistic
+    
+    if (working == "auto") {
+        fit <- forecast::auto.arima(z, ic = "aic", max.d = 0, max.D = 0, allowmean = FALSE)
+        ## stepwise=FALSE, approximation=FALSE)
+        ## working model: p.max = q.max = 5
+    } else {
+        pq <- as.numeric(unlist(strsplit(working, ",")))
+        fit <- arima(z, order = c(pq[1], 0, pq[2]), include.mean = FALSE) ## working arma(2, 2)
+    }
+    model <- list(ar = fit$model$phi, ma = fit$model$theta)
+
+    ## theoretical variance of arma; note the negative sign of theta; McLeod (1975)
+    sigma <- sqrt(ltsa::tacvfARMA(phi = model$ar, theta = - model$ma, maxLag = 0))
+    
+    stat.b <- rep(0, B)
+    for (i in 1:B) {
+        z.b <- arima.sim(model, n = n)
+        ##   arma(1, 1) only: sd = sqrt (1 - ophi^2) / (1 + 2 * phi * theta + theta^2))
+        x.b <- qnorm(pnorm(z.b, mean = 0, sd = sigma), mean = mu, sd = stddev)
+        
+        # Transform bootstrap sample and fit the parameters
+        mu.b <- mean(x.b)
+        stddev.b <- sd(x.b)
+        
+        # Calculate new test statistic
+        stat.b[i] <- ks.test(x.b, "pnorm", mean = mu.b, sd = stddev.b)$statistic
+    }
+    p.value <- mean(stat.b >= stat)
+    
+    counter <<- counter + 1
+    cat(counter, "")
+    list(p.value = p.value)
+}
+
+source("autoarma.R")
+```
+
+```{r hist_correlation}
+ # Set AR coefficients and generate results
+ars <- seq(-0.3, 0.3, by = 0.1)
+ar_results <- test_correlation(1000, ars)
+
+# Generate histograms plot
+hist_correlation <- ggplot(ar_results) + 
+                    geom_histogram(aes(x = p_value, fill = ar), boundary = 0, binwidth = 1/20) + 
+                    facet_grid(~ar) +
+                    theme(legend.position = "none") +
+                    scale_x_continuous(name = "p-value", breaks=c(0, 1))
+
+# Save the histogram figure
+ggsave(filename = "hist_correlation.pdf", plot = hist_correlation, path = "../Manuscript", height = 2.1, width = 6)
+```
+
+```{r Parametric}
+# Generate results
+n_tests <- 1000
+n <- 100
+counter <- 0
+pvals_parametric <- replicate(n_tests, test_parametric(rnorm(n), B = 1000)$p.value)
+counter <- 0
+pvals_babu <- replicate(n_tests, test_babu(rnorm(n), B = 1000)$p.value)
+pvals_naive <- replicate(n_tests, test_naive(rnorm(n))$p.value)
+
+# Create a master data_frame with all the results
+histogram <- c(rep("Parametric", n_tests), rep("Babu", n_tests), rep("Naive", n_tests))
+p_values <- c(pvals_parametric, pvals_babu, pvals_naive)
+results <- data_frame(p_values, histogram)
+
+results$histogram <- factor(results$histogram, levels = c("Naive", "Parametric", "Babu"))
+
+# Generate histograms plot
+hist_fitted <- ggplot(results) + 
+                   geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
+                   scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
+                   theme(legend.position = "none") +
+                   facet_wrap(~histogram, scales = "free_y")
+
+# Save the histogram figure
+ggsave(filename = "hist_fitted.pdf", plot = hist_fitted, path = "../Manuscript", height = 2.1, width = 6)
+```
+
+```{r AR(1) D}
 ptm <- proc.time()
 
 # Set variables
@@ -546,54 +922,6 @@ ggsave(filename = "hist_gev_D.pdf", plot = hist_gev_D, path = "../Manuscript", h
 ```
 
 ```{r AR(1) FD}
-test_copula_FD <- function(x, dist, B) {
-
-    # Get observed statistic
-    n <- length(x)
-    mu <- mean(x)
-    sigma <- sd(x)
-    stat  <- ks.test(x, dist, mean = mu, sd = sigma)$statistic
-    
-    # Get lag-1 sample auto-spearman rho
-    rho  <-  cor(x[-1], x[-n], method = "spearman")
-    r <- iRho(normalCopula(), rho)
-    np <- normalCopula(r)
-    
-    # Perform parametric bootstrap to get an empirical distribution of stat
-    stat.b <- double(n)
-    
-    for (i in 1:B) {
-        # 1. The marginal distribution is the fitted dist
-        # 2. There is temporal dependence
-        u <- runif(n) 
-        for (j in 2:n) {
-            u[j]  <- cCopula(c(u[j-1], u[j]), np, indices = 2, inverse = TRUE)
-        }
-        
-        # Transform bootstrap sample and fit the parameters
-        x.b <- qnorm(u, mean = mu, sd = sigma)
-        mu.b <- mean(x.b)
-        sigma.b <- sd(x.b)
-        
-        # Gather bootstrap sample's test statistic
-        stat.b[i] <- ks.test(x.b, dist, mean = mu.b, sd = sigma.b)$statistic
-    }
-    
-    # Return empirical p-value
-    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-    
-    counter <<- counter + 1
-    cat(counter, "")
-    
-    return(p.value)
-}
-
-# Super naive KS-test with fitted parameters
-test_standard_ks_F <- function(x) {
-  p.value <- ks.test(x, "pnorm", mean = mean(x), sd = sd(x))$p.value
-  list(p.value = p.value)
-}
-
 ptm <- proc.time()
 
 # Set variables
@@ -646,7 +974,7 @@ B <- 1000
 ma <- 0.5
 
 # P-vals from using bootstrap with copulas
-pvals_copula <- replicate(nrep, test_copula_D(arima.sim(list(ma = ma), rand.gen = rnorm, sd = sqrt(1/(1+ma^2)), n = n), "pnorm", B = B))
+pvals_copula <- replicate(nrep, test_copula_FD(arima.sim(list(ma = ma), rand.gen = rnorm, sd = sqrt(1/(1+ma^2)), n = n), "pnorm", B = B))
 counter <- 0
 
 # P-vals from using parametric bootstrap
@@ -690,7 +1018,7 @@ ar <- 0.5
 ma <- 0.3
 
 # P-vals from using bootstrap with copulas
-pvals_copula <- replicate(nrep, test_copula_D(arima.sim(list(ar = ar, 
+pvals_copula <- replicate(nrep, test_copula_FD(arima.sim(list(ar = ar, 
                                                            ma = ma), 
                                                       rand.gen=rnorm, 
                                                       sd = sqrt((1-(ar^2))/(1+2*ar*ma+ma^2)), 
@@ -747,7 +1075,7 @@ b1 <- 0.5
 b2 <- 0.3
 
 # P-vals from using bootstrap with copulas
-pvals_copula <- replicate(nrep, test_copula_D(arima.sim(list(order = c(2, 0, 0), 
+pvals_copula <- replicate(nrep, test_copula_FD(arima.sim(list(order = c(2, 0, 0), 
                                                            ar = c(b1, b2)),
                                                       rand.gen=rnorm,
                                                       sd = sqrt(((1+b2)*(1-b2-b1)*(1-b2+b1))/(1-b2)),
@@ -793,102 +1121,6 @@ ggsave(filename = "hist_ar2_FD.pdf", plot = hist_ar2_FD, path = "../Manuscript",
 ```
 
 ```{r Gamma FD}
-# Testing bootstrap with copulas for gamma distribution
-test_gamma_FD <- function(x, dist, B = 100, wcopula = normalCopula) {
-
-    # Get observed stat
-    n <- length(x)
-    m <- mean(x)
-    v <- var(x)
-    scale <- v/m
-    shape <- m*m/v
-    
-    stat  <- ks.test(x, dist, shape = shape, scale = scale)$statistic
-
-    # Get lag-1 sample auto-spearman rho
-    rho  <-  cor(x[-1], x[-n], method = "spearman")
-    r <- iRho(wcopula(), rho)
-    wcop <- wcopula(r)
-    
-    # Parametric bootstrap to get an empirical distribution of stat
-    stat.b <- double(n)
-    
-    for (i in 1:B) {
-        # 1. The marginal distribution is the fitted dist
-        # 2. There is temporal dependence
-        u <- runif(n)
-        for (j in 2:n) {
-            u[j]  <- cCopula(c(u[j-1], u[j]), wcop, indices = 2, inverse = TRUE)
-        }
-        
-        # Transform the bootstrap sample and fit the parameters
-        x.b <- qgamma(u, shape = shape, scale = scale)
-        
-        m.b <- mean(x.b)
-        v.b <- var(x.b)
-        scale.b <- v.b/m.b
-        shape.b <- m.b*m.b/v.b
-        
-        # Calculate new test statistic
-        stat.b[i] <- ks.test(x.b, dist, shape = shape.b, scale = scale.b)$statistic
-    }
-    
-    # Return empirical p-value    
-    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-    
-    counter <<- counter + 1
-    cat(counter, "")
-    
-    return(p.value)
-}
-
-# Parametric bootstrap to solve fitted parameters for gamma distribution
-test_parametric_gamma <- function(x, B = 1000) {
-  
-  # Summarize parameters
-  m <- mean(x)
-  v <- var(x)
-  scale <- v/m
-  shape <- m*m/v
-  
-  # Store KS statistic from using fitted parameters
-  stat <- ks.test(x, "pgamma", shape = shape, scale = scale)$statistic
-  
-  # Parametric bootstrap to approximate the null distribution
-  n <- length(x)
-  stat.b <- double(B)
-  for (i in 1:B) {
-    x.b <- rgamma(n, shape = shape, scale = scale)
-    
-    m.b <- mean(x.b)
-    v.b <- var(x.b)
-    
-    scale.b <- v.b/m.b
-    shape.b <- m.b*m.b/v.b
-    
-    stat.b[i] <- ks.test(x.b, "pgamma", shape = shape.b, scale = scale.b)$statistic
-  }
-  
-  # Return empirical p-value
-  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-
-  counter <<- counter + 1
-  cat(counter, "")
-  list(p.value = p.value)
-}
-
-# Naive function that incorrectly uses fitted parameters for gamma distribution
-test_super_naive_gamma <- function(x) {
-  
-  m <- mean(x)
-  v <- var(x)
-  scale <- v/m
-  shape <- m*m/v
-  
-  p.value <- ks.test(x, "pgamma", shape = shape, scale = scale)$p.value
-  list(p.value = p.value)
-}
-
 ptm <- proc.time()
 
 # Set variables
@@ -933,102 +1165,6 @@ ggsave(filename = "hist_gamma_FD.pdf", plot = hist_gamma_FD, path = "../Manuscri
 ```
 
 ```{r GEV FD}
-# Testing bootstrap with copulas for GEV distribution
-test_gev_FD <- function(x, B = 100, wcopula = normalCopula) {
-  
-    n <- length(x)
-    
-    # Get observed stat
-    fit <- gev.fit(x, show = FALSE)
-    loc <- fit$mle[1]
-    scale <- fit$mle[2]
-    shape <- fit$mle[3]
-    
-    stat  <- ks.test(x, 'pgev', loc = loc, scale = scale, shape = shape)$statistic
-    
-    # Get lag-1 sample auto-spearman rho
-    rho  <-  cor(x[-1], x[-n], method = "spearman")
-    r <- iRho(wcopula(), rho)
-    wcop <- wcopula(r)
-    
-    # Parametric bootstrap to get an empirical distribution of stat
-    stat.b <- double(n)
-
-    for (i in 1:B) {
-        # 1. The marginal distribution is the fitted dist
-        # 2. There is temporal dependence
-        u <- runif(n)
-        for (j in 2:n) {
-            u[j]  <- cCopula(c(u[j-1], u[j]), wcop, indices = 2, inverse = TRUE)
-        }
-
-        # Transform the bootstrap sample and fit the parameters
-        x.b <- qgev(u, loc = loc, scale = scale, shape = shape)
-        
-        fit.b <- gev.fit(x.b, show = FALSE)
-        loc.b <- fit.b$mle[1]
-        scale.b <- fit.b$mle[2]
-        shape.b <- fit.b$mle[3]
-        
-        # Calculate bootstrap test statistic
-        stat.b[i] <- ks.test(x.b, 'pgev', loc = loc.b, scale = scale.b, shape = shape.b)$statistic
-    }
-    
-    # Return empirical p-value    
-    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-    
-    counter <<- counter + 1
-    cat(counter, "")
-    
-    return(p.value)
-}
-
-# Parametric bootstrap to solve fitted parameters for GEV distribution
-test_parametric_gev <- function(x, B = 1000) {
-  
-  # Summarize parameters
-  fit <- gev.fit(x, show = FALSE)
-  loc <- fit$mle[1]
-  scale <- fit$mle[2]
-  shape <- fit$mle[3]
-  
-  # Store KS statistic from using fitted parameters
-  stat <- ks.test(x, "pgev", loc = loc, scale = scale, shape = shape)$statistic
-  
-  # Parametric bootstrap to approximate the null distribution
-  n <- length(x)
-  stat.b <- double(B)
-  for (i in 1:B) {
-    x.b <- rgev(n, loc = loc, scale = scale, shape = shape)
-    
-    fit.b <- gev.fit(x.b, show = FALSE)
-    loc.b <- fit.b$mle[1]
-    scale.b <- fit.b$mle[2]
-    shape.b <- fit.b$mle[3]
-    
-    stat.b[i] <- ks.test(x.b, "pgev", loc.b, shape = shape.b, scale = scale.b)$statistic
-  }
-  
-  # Return empirical p-value
-  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-
-  counter <<- counter + 1
-  cat(counter, "")
-  list(p.value = p.value)
-}
-
-# Naive function that incorrectly uses fitted parameters for GEV distribution
-test_super_naive_gev <- function(x) {
-  
-  fit <- gev.fit(x, show = FALSE)
-  loc <- fit$mle[1]
-  scale <- fit$mle[2]
-  shape <- fit$mle[3]
-    
-  p.value <- ks.test(x, "pgev", loc = loc, scale = scale, shape = shape)$p.value
-  list(p.value = p.value)
-}
-
 ptm <- proc.time()
 
 # Set variables
@@ -1182,46 +1318,6 @@ ggsave(filename = "hist_gamma_gev_FD.pdf", plot = hist_gamma_gev_FD, path = "../
 ```
 
 ```{r AR(1) D2}
-test_copula_D2 <- function(x, pdist, qdist, ..., B) {
-
-    ## Get observed statistic
-    n <- length(x) 
-    stat  <- ks.test(x, pdist, ...)$statistic
-    
-    ## transform the data to standard normal scale and fit arma(1,1)
-    zx <- qnorm(rank(x) / (n + 1))
-    
-    fit <- tseries::arma(zx, include.intercept = FALSE)
-    ar <- fit$coef[1]
-    ma <- fit$coef[2]
-
-    ## Perform parametric bootstrap to get an empirical distribution of stat
-    stat.b <- double(n)
-    
-    for (i in 1:B) {
-        ## 1. The marginal distribution is the fitted dist
-        ## 2. There is arma(1,1) dependence on the normal scale
-        zx.b <- arima.sim(list(ar = ar, ma = ma), 
-                          rand.gen=rnorm,
-                          sd = sqrt((1-(ar^2))/(1+2*ar*ma+ma^2)),
-                          n = n) # simulate from fit
-        u <- pnorm(zx.b)
-        # Transform bootstrap sample and fit the parameters
-        x.b <- qdist(u, ...)
-        
-        # Gather bootstrap sample's test statistic
-        stat.b[i] <- ks.test(x.b, pdist, ...)$statistic
-    }
-    
-    # Return empirical p-value
-    p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-    
-    counter <<- counter + 1
-    cat(counter, "")
-    
-    return(p.value)
-}
-
 # Set variables
 n <- 100
 ar <- 0.5
@@ -1560,17 +1656,7 @@ hist_gamma_gev_D2
 ggsave(filename = "hist_gamma_gev_D2.pdf", plot = hist_gamma_gev_D2, path = "../Manuscript", height = 4.2, width = 6)
 ```
 
-```{r Autoarma D}
-source("autoarma.R")
-
-# Test autoarma as a solution to correlated data
-test_autoarma <- function(x, pdist, qdist, B, working) {
-  p.value <- ks.arma(x = x, pdist = pdist, qdist = qdist, B = 1000, working = working)
-  counter <<- counter + 1
-  cat(counter, "")
-  list(p.value = p.value)
-}
-
+```{r Autoarma D Gamma}
 # Generate results
 nrep <- 1000
 n <- 200
@@ -1582,13 +1668,13 @@ qdist <- function(u) qgamma(u, shape = shape, scale = scale)
 pdist <- function(u) pgamma(u, shape = shape, scale = scale)
 working <- "auto"
 counter <- 0
-pvals_autoarma <- replicate(nrep, test_autoarma(x = genData(n, phi, theta, qdist), 
+pvals_autoarma <- replicate(nrep, test_autoarma_D(x = genData2(n, phi, theta, qdist), 
                                                    pdist = pdist, 
                                                    qdist = qdist, 
                                                    B = 1000, 
                                                    working = working)$p.value)
 counter <- 0
-pvals_naive <- replicate(nrep, test_standard_ks(genData(n, phi, theta, qdist),
+pvals_naive <- replicate(nrep, test_standard_ks(genData2(n, phi, theta, qdist),
                                                    pdist = pgamma,
                                                    shape = shape, 
                                                    scale = scale)$p.value)
@@ -1601,63 +1687,61 @@ results <- data_frame(p_values, histogram)
 results$histogram <- factor(results$histogram, levels = c("Naive", "Autoarma"))
 
 # Generate histograms plot
-hist_autoarma <- ggplot(results) + 
+hist_autoarma_D_Gamma <- ggplot(results) + 
                    geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
                    scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
                    theme(legend.position = "none") +
                    facet_wrap(~histogram, scales = "free_y")
-hist_autoarma
+hist_autoarma_D_Gamma
 
 # Save the histogram figure
-ggsave(filename = "hist_autoarma.pdf", plot = hist_autoarma, path = "../Manuscript", height = 2.1, width = 6)
+ggsave(filename = "hist_autoarma_D_Gamma.pdf", plot = hist_autoarma_D_Gamma, path = "../Manuscript", height = 2.1, width = 6)
 ```
 
-```{r Autoarma FD}
-test_autoarma_FD <- function(x, pdist, qdist, B = 1000, working=c("auto", "2,2")) {
-    z <- qnorm(pdist(x))
-    
-    n <- length(x)
-    m <- mean(x)
-    v <- var(x)
-    scale <- v/m
-    shape <- m*m/v
-    
-    stat  <- ks.test(x, "pgamma", shape = shape, scale = scale)$statistic
-    
-    if (working == "auto") {
-        fit <- forecast::auto.arima(z, ic = "aic", max.d = 0, max.D = 0, allowmean = FALSE)
-        ## stepwise=FALSE, approximation=FALSE)
-        ## working model: p.max = q.max = 5
-    } else {
-        pq <- as.numeric(unlist(strsplit(working, ",")))
-        fit <- arima(z, order = c(pq[1], 0, pq[2]), include.mean = FALSE) ## working arma(2, 2)
-    }
-    model <- list(ar = fit$model$phi, ma = fit$model$theta)
+```{r Autoarma D AR(2)}
+# Generate results
+nrep <- 1000
+n <- 200
+phi <- c(.5, .3)
+theta <- 0
+mean <- 0
+stddev <- 1
+qdist <- function(u) qnorm(u, mean = mean, sd = stddev)
+pdist <- function(u) pnorm(u, mean = mean, sd = stddev)
+working <- "auto"
 
-    ## theoretical variance of arma; note the negative sign of theta; McLeod (1975)
-    sigma <- sqrt(ltsa::tacvfARMA(phi = model$ar, theta = - model$ma, maxLag = 0))
-    
-    stat.b <- rep(0, B)
-    for (i in 1:B) {
-        z.b <- arima.sim(model, n = n)
-        ##   arma(1, 1) only: sd = sqrt (1 - ophi^2) / (1 + 2 * phi * theta + theta^2))
-        x.b <- qgamma(pnorm(z.b, mean = 0, sd = sigma), shape = shape, scale = scale)
-        
-        m.b <- mean(x.b)
-        v.b <- var(x.b)
-        scale.b <- v.b/m.b
-        shape.b <- m.b*m.b/v.b
-        
-        # Calculate new test statistic
-        stat.b[i] <- ks.test(x.b, "pgamma", shape = shape.b, scale = scale.b)$statistic
-    }
-    p.value <- mean(stat.b >= stat)
-    
-    counter <<- counter + 1
-    cat(counter, "")
-    list(p.value = p.value)
-}
+counter <- 0
+pvals_autoarma <- replicate(nrep, test_autoarma_D(x = genData2(n, phi, theta, qdist), 
+                                                   pdist = pdist, 
+                                                   qdist = qdist, 
+                                                   B = 1000, 
+                                                   working = working)$p.value)
+counter <- 0
+pvals_naive <- replicate(nrep, test_standard_ks(genData2(n, phi, theta, qdist),
+                                                   pdist = pnorm,
+                                                   mean = mean, 
+                                                   sd = sd)$p.value)
 
+# Create a master data_frame with all the results
+histogram <- c(rep("Autoarma", nrep), rep("Naive", nrep))
+p_values <- c(pvals_autoarma, pvals_naive)
+results <- data_frame(p_values, histogram)
+
+results$histogram <- factor(results$histogram, levels = c("Naive", "Autoarma"))
+
+# Generate histograms plot
+hist_autoarma_D_AR2 <- ggplot(results) + 
+                   geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
+                   scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
+                   theme(legend.position = "none") +
+                   facet_wrap(~histogram, scales = "free_y")
+hist_autoarma_D_AR2
+
+# Save the histogram figure
+ggsave(filename = "hist_autoarma_D_AR2.pdf", plot = hist_autoarma_D_AR2, path = "../Manuscript", height = 2.1, width = 6)
+```
+
+```{r Autoarma FD Gamma}
 # Generate results
 nrep <- 1000
 n <- 200
@@ -1670,7 +1754,7 @@ pdist <- function(u) pgamma(u, shape = shape, scale = scale)
 working <- "auto"
 counter <- 0
 
-pvals_autoarma <- replicate(nrep, test_autoarma_FD(x = genData(n, phi, theta, qdist), 
+pvals_autoarma <- replicate(nrep, test_autoarma_FD_Gamma(x = genData2(n, phi, theta, qdist), 
                                                    pdist = pdist, 
                                                    qdist = qdist, 
                                                    B = 1000, 
@@ -1678,9 +1762,9 @@ pvals_autoarma <- replicate(nrep, test_autoarma_FD(x = genData(n, phi, theta, qd
 counter <- 0
 
 # P-vals from using parametric bootstrap
-pvals_parametric <- replicate(nrep, test_parametric_gamma(genData(n, phi, theta, qdist))$p.value)
+pvals_parametric <- replicate(nrep, test_parametric_gamma(genData2(n, phi, theta, qdist))$p.value)
 
-pvals_naive <- replicate(nrep, test_super_naive_gamma(genData(n, phi, theta, qdist))$p.value)
+pvals_naive <- replicate(nrep, test_super_naive_gamma(genData2(n, phi, theta, qdist))$p.value)
 
 # Create a master data_frame with all the results
 histogram <- c(rep("Autoarma", nrep), rep("Naive Parametric", nrep), rep("Super Naive", nrep))
@@ -1690,14 +1774,58 @@ results <- data_frame(p_values, histogram)
 results$histogram <- factor(results$histogram, levels = c("Super Naive", "Naive Parametric", "Autoarma"))
 
 # Generate histograms plot
-hist_autoarma_FD <- ggplot(results) + 
+hist_autoarma_FD_Gamma <- ggplot(results) + 
                    geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
                    scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
                    theme(legend.position = "none") +
                    facet_wrap(~histogram, scales = "free_y")
-hist_autoarma_FD
+hist_autoarma_FD_Gamma
 
 # Save the histogram figure
-ggsave(filename = "hist_autoarma_FD.pdf", plot = hist_autoarma_FD, path = "../Manuscript", height = 2.1, width = 6)
+ggsave(filename = "hist_autoarma_FD_Gamma.pdf", plot = hist_autoarma_FD_Gamma, path = "../Manuscript", height = 2.1, width = 6)
+```
+
+```{r Autoarma FD AR(2)}
+# Generate results
+nrep <- 1000
+n <- 200
+phi <- c(.5, .3)
+theta <- 0
+mean <- 0
+stddev <- 1
+qdist <- function(u) qnorm(u, mean = mean, sd = stddev)
+pdist <- function(u) pnorm(u, mean = mean, sd = stddev)
+working <- "auto"
+counter <- 0
+
+pvals_autoarma <- replicate(nrep, test_autoarma_FD_AR2(x = genData2(n, phi, theta, qdist), 
+                                                   pdist = pdist, 
+                                                   qdist = qdist, 
+                                                   B = 1000, 
+                                                   working = working)$p.value)
+counter <- 0
+
+# P-vals from using parametric bootstrap
+pvals_parametric <- replicate(nrep, test_parametric(genData2(n, phi, theta, qdist))$p.value)
+
+pvals_naive <- replicate(nrep, test_standard_ks_F(genData2(n, phi, theta, qdist))$p.value)
+
+# Create a master data_frame with all the results
+histogram <- c(rep("Autoarma", nrep), rep("Naive Parametric", nrep), rep("Super Naive", nrep))
+p_values <- c(pvals_autoarma, pvals_parametric, pvals_naive)
+results <- data_frame(p_values, histogram)
+
+results$histogram <- factor(results$histogram, levels = c("Super Naive", "Naive Parametric", "Autoarma"))
+
+# Generate histograms plot
+hist_autoarma_FD_AR2 <- ggplot(results) + 
+                   geom_histogram(aes(x = p_values, fill = histogram), boundary = 0, binwidth = 1/20) + 
+                   scale_x_continuous(name = "p-value", breaks=c(0, 1)) + 
+                   theme(legend.position = "none") +
+                   facet_wrap(~histogram, scales = "free_y")
+hist_autoarma_FD_AR2
+
+# Save the histogram figure
+ggsave(filename = "hist_autoarma_FD_AR2.pdf", plot = hist_autoarma_FD_AR2, path = "../Manuscript", height = 2.1, width = 6)
 ```
 

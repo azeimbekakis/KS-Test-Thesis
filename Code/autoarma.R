@@ -31,7 +31,7 @@ ks.arma <- function(x, pdist, qdist, B = 1000, working=c("auto", "2,2")) {
 qdist <- function(u) qgamma(u, shape = 3, scale = 1)
 pdist <- function(u) pgamma(u, shape = 3, scale = 1)
 
-genData <- function(n, phi, theta, qdist) {
+genData2 <- function(n, phi, theta, qdist) {
     x <- arima.sim(model = list(ar = phi, ma = theta), n = n)
     ## xbig <- arima.sim(model = list(ar = phi, ma = theta), n = 100000)
     ## sigma <- sd(xbig)
