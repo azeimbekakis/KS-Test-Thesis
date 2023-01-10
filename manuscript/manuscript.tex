@@ -313,7 +313,7 @@ liberal. The reasoning is similar when the serial dependence is negative,
 in which case, the test is conservative.
 
 
-The invalidity of the statndard statistic for serially dependent data can be
+The invalidity of the standard statistic for serially dependent data can be
 illustrated by a simple simulation study. Consider a first-order autoregressive
 or AR(1) model with marginal standard normal distribution. For each AR
 coefficient $\psi \in \{-0.3, 0.2, 0.1, 0, 0.1, 0.2, 0.3\}$, we generated 1000
@@ -366,7 +366,7 @@ dependence of the observations.
 The parameters of the working normal copula are
 estimated from fitting an auto-regressive moving average (ARMA) model to the
 observed data transformed to the standard normal scale. In particular, let
-$Z_i = \Phi\{ F(X_i)\}$, $i = 1, \ldots, n$, where $\Phi$ is the distribution
+$Z_i = \Phi^{-1}\{ F(X_i)\}$, $i = 1, \ldots, n$, where $\Phi$ is the distribution
 function of the standard normal. Then we fit an ARMA$(p, q)$ model to
 $Z_1, \ldots, Z_n$ with AR order $p$ and MA order $q$ selected by the Akaike
 Information Criterion (AIC). This can be done with, for example, function
@@ -494,25 +494,21 @@ is shown to be applicable regardless of the family of distribution tested.
 \section{Unspecified Parameters and Serially Dependent Data}
 \label{sec:fittedwithdependence}
 
-The procedure demonstrated in Section~\ref{sec:dependence} works when the data
-is dependent and the hypothesized distribution is completely specified. However,
-this is not practical. In practice we do not know the parameters of the
-hypothesized distribution. Therefore, it is valuable to have a procedure that
-corrects for both fitted parameters and serially dependent data. The remedy
-using copulas can be modified to be effective in the case where both assumptions
-must be violated. The null hypothesis is equivalent to Section~\ref{sec:fitted}
-and the test statistic is equal to Equation~\eqref{eq:ks_fitted}. The bootstrap
-procedure in Section~\ref{sec:fitted} is no longer valid because the serial
-dependence is not accounted for. Let $r$ be the AR(1) coefficient of the normal
-copula that matches the sample first-order Spearman's rho of the observed data
-as obtained by the \texttt{iRho} function in the \textsf{copula} package
-\citep{Rpkg:copula}. We propose the following bootstrap procedure to assess the
+For testing distributions with unspecified parameters with serially dependent
+data, we can modify the procedure in the last section. In preparation, let
+$\hat\theta_n$ be the marginally fitted parameters, and let
+$Z_i = \Phi^{-1} \{F_{\hat\theta_n}(X_i)\}$, $i = 1, \ldots, n$.
+For $Z_i$'s that are marginally standard normal variables, we fit an
+ARMA$(p,q)$ model with AR order $p$ and MA order $q$ selected by AIC as in the
+last section. Let $\sigma^2$ be the unconditional variance of the fitted ARMA
+process. We propose the following bootstrap procedure to assess the
 significance of the observed KS statistic.
+
 
 \begin{enumerate}
 \item
-  Generate $Z_1, \ldots, Z_n$ from an AR(1) process with autocorrelation
-  coefficient $r$ such that the $Z_i$'s are $N(0, 1)$ variables.
+  Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process
+  with innovation variance $1 / \sigma^2$ such that the $Z_i$'s are $N(0, 1)$ variables.
 \item
   Form a bootstrap sample $X_i^* = F^{-1}_{\hat\theta_n} [\Phi(Z_i)]$,
   $i = 1, \ldots, n$, whose first-order sample Spearman's rho matches that of
