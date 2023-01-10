@@ -301,11 +301,11 @@ standard uniform distributions.
 \section{Serially Dependent Data}
 \label{sec:dependence}
 
-When the observed data $X_1, \ldots, X_n$ are not independent but serially
-dependent, the null distribution of the KS statistic $D_n$
-in~\eqref{eq:ks_standard} changes. For a
-stationary series, it may still be of interest to test whether the data come
-from a completely specified distribution~$F$. When the serial dependence is
+Here we consider the situation where the observed data $X_1, \ldots, X_n$ are
+not independent but serially dependent, and the hypothesized distribution $F$
+contains no unknown parameters. The null distribution of the KS statistic $D_n$
+in~\eqref{eq:ks_standard} changes with the serially dependence.
+When the serial dependence is
 positive, the effective sample size is less than~$n$. The testing statistic
 would be stochastically greater than that obtained from independent data, making
 it more likely to reject the null hypothesis than it should. So the test is
@@ -340,7 +340,7 @@ $\psi$, the bigger the deviation from the desired level.
 A complete remedy for the KS tests with serially dependent data is
 challenging. The null distribution depends on the structure of the serial
 dependence, which can be arbitrary in practice. A parametric bootstrap procedure
-would need model specification of the dependence, whereas the primary interest
+would need specify a model for the dependence, whereas the primary interest
 is to test the marginal distribution of the stationary series. A block
 nonparametric bootstrap for stationary data \citep{kunsch1989jackknife} is
 attempting, but the counterpart of a bias correction as in
@@ -359,19 +359,35 @@ completely characterizes the dependence structure of a multivariate
 distribution \citep{hofert2018elements}. It separates the dependence structure
 of a multivariate distribution from its marginal distributions. The normal copula
 is the copula determined by the multivariate normal distribution. We propose to
-use a normal working copula with an AR(1) structure to approximate the serial
-dependence of the observations. Let $\hat\rho$ be the lag-1 sample auto
-Spearman's rho of the observed data. A normal copula of dimension~$n$ can be
-constructed with an AR(1) structure and its AR coefficient~$\psi$ is chosen to
-ensure that the Spearman's rho matches $\hat\rho$. Let $\psi(\hat\rho)$ denote
-this coefficient. The bootstrap procedure is as follows.
+use a normal working copula to approximate the serial
+dependence of the observations.
+
+
+The parameters of the working normal copula are
+estimated from fitting an auto-regressive moving average (ARMA) model to the
+observed data transformed to the standard normal scale. In particular, let
+$Z_i = \Phi\{ F(X_i)\}$, $i = 1, \ldots, n$, where $\Phi$ is the distribution
+function of the standard normal. Then we fit an ARMA$(p, q)$ model to
+$Z_1, \ldots, Z_n$ with AR order $p$ and MA order $q$ selected by the Akaike
+Information Criterion (AIC). This can be done with, for example, function
+\texttt{auto.arima()} from  R package \texttt{forecast}
+\citep{hyndman2008automatic}. Since it is known that the mean of $Z_i$'s are
+zero, it is necessary to set the intercept of the ARMA model as zero in the
+fitting process. The selected ARMA$(p, q)$ model with fitted
+parameters will be used as the working model to generate bootstrap sample with
+serial dependence mimicking that in the observed data. The unconditional
+variance $\sigma^2$ of the ARMA model can be obtained with function
+\texttt{tacvfARMA()} from R package \texttt{ltsa} \citep{mcleod2007algorithms}.
+
+
+The semiparametric bootstrap procedure is as follows.
 \begin{enumerate}
 \item
-  Generate $Z_1, \ldots, Z_n$ from an AR(1) process with autocorrelation
-  coefficient $\psi(\hat\rho)$ such that the $Z_i$'s are $N(0, 1)$ variables.
+  Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process with
+  innovation variance $1 / \sigma^2$ such that the $Z_i$'s are marginally
+  standard normal variables.
 \item
-  Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i)]$,  $i = 1, \ldots, n$,
-  where $\Phi$ is the distribution function of $N(0, 1)$.
+  Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$.
 \item
   Obtain the empirical distribution function $F_n^*$ of the bootstrap sample
   $X_1^*, \ldots, X_n^*$.
@@ -392,11 +408,12 @@ are greater than or equal to~$D_n$.
 This process is semiparametric because the marginal distribution is
 parametrically specified while the dependence structure of the stationary series
 is only approximated. The closer the approximation is to the truth, the better
-performance of the size of the KS test  If the true dependence is indeed a
-normal copula with an AR(1) structure, this method is exact. When the true
-dependence is not AR(1), it may still give a reasonable approximation that can
-be useful for practical purposes. More complicated working models other
-than the AR(1) process could be used, but we focus here on the AR(1) model.
+performance of the size of the KS test, The dependence structure determined by
+the working ARMA process approximates a wide class of dependence structures.
+If the true dependence indeed has an ARMA structure, this method is exact. When
+the true dependence is not covered the ARMA model, the working model may still
+give a reasonable approximation that can
+be useful for practical purposes. 
 
 
 Continuing with the simulation study, 
@@ -438,6 +455,9 @@ in the data, appears to be uniform and restores the size of the KS test.
   performed with sample size $n = 100$ and $B = 1000$ bootstrap samples.}
   \label{fig:hist_ma1_arma_ar2_D}
 \end{figure}
+
+\jy{to be rewritten when the figures are generated.}
+\jy{I suggest that we keep using gamma as the marginal distribution throughout.}
 
 The procedure detailed in this section can also provide a reasonable
 approximation in cases where the true dependence structure is not far from
