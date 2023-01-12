@@ -70,7 +70,7 @@ to independent, continuous data with a hypothesized distribution that is
 completely specified. It is not uncommon, however, to see in the literature that
 it was applied to dependent, discrete, or rounded data, with hypothesized
 distributions containing estimated parameters. For example, it has been
-``discovered'' multiple times that the test is too conservative when
+``discovered'' multiple times that the test is too conservative when the 
 hypothesized distribution has parameters that need to be estimated.
 We demonstrate misuses of the one-sample KS test in
 three scenarios through simulation studies:
@@ -103,7 +103,7 @@ The asymptotic distribution of $D_n$ under $H_0$ is independent of the
 distribution~$F$. As $n \to \infty$, $D_n$ converges in distribution to
 the supremum of standard Brownian bridge \citep{kolmogorov1933sulla}. For large
 samples, the tests can be performed with a table \citep{smirnov1948table}.
-Critical values for small samples ($n \le 35$) has also been given
+Critical values for small samples ($n \le 35$) have also been given
 \citep{massey1951kolmogorov}. The KS test is available in popular
 statistical software packages, such as function \texttt{ks.test} in R package
 \textsf{stats} \citep{R, marsaglia2003evaluating}.
@@ -117,9 +117,9 @@ the KS test when applied to discontinuous distributions. The null distribution
 of the KS statistic is no longer distribution free. Computing the
 exact and asymptotic distribution of $D_n$ is challenging. Fortunately, the null
 distribution of the KS statistic for discontinuous distributions has been
-efficiently addressed by \citet{dimitrova2020computing} with an
+efficiently addressed by \citet{dimitrova2020computing} with a
 companion R package \textsf{KSgeneral}. Although a common misuse of KS test, the
-issue with discontinuous or data is not our focus.
+issue with discontinuous data is not our focus.
 
 
 When the hypothesized distribution~$F$ contains unspecified parameters, as is
@@ -127,16 +127,17 @@ the case in most goodness-of-fit test settings, the standard KS test is not
 applicable. \citet{steinskog2007cautionary} ``discovers'' the change in power
 when using fitted parameters and stresses caution in using the KS test in
 such ways. In fact, using fitted parameters in place of the true parameters in
-KS test is long known to yield extremely conservative results
+KS test has been long known to yield extremely conservative results
 \citep[e.g.,][]{lilliefors1967kolmogorov}. This problem can be solved by
 parametric bootstrap \citep{efron1985bootstrap, hall1991two}, where
-bootstrap samples of the testing statistics are constructed from samples
+bootstrap samples of the test statistics are constructed from samples
 generated from the fitted hypothesized distribution. A nonparametric bootstrap
-solution is not trivial because the a nonparametric bootstrap sample of the
-observed data have ties, which would not happen for continuous distributions.
-\citet{babu2004goodness} derived the bias of standard nonparametric bootstrap and
+solution is not trivial because a nonparametric bootstrap sample of the
+observed data has ties, which would not happen for continuous distributions.
+\citet{babu2004goodness} derived the bias of the standard nonparametric 
+bootstrap and
 showed how to correct it. They further noted that both parametric and
-non-parametric procedures lead to correct asymptotic levels.
+nonparametric procedures lead to correct asymptotic levels.
 
 
 The standard KS test does not apply to stationary yet dependent data either. The
@@ -144,11 +145,13 @@ distribution of the KS statistic would have a higher variance for positively
 dependent data than that derived when the data are independent because of a
 smaller effective sample size. For example, for testing normality,
 \citet{durilleul1992lack} demonstrates that a naive application of
-the KS statistic is too liberal for medium-to-high positive serieal dependence,
+the KS statistic is too liberal for medium-to-high positive serial dependence,
 and that for negative dependence, the behavior is asymmetrical. For remedies,
-\citet{weiss1978modification} provides a procedure that is applicable specifically for data
+\citet{weiss1978modification} provides a procedure that is applicable 
+specifically for data
 modeled by the second-order auto-regressive (AR) process where the AR parameters
-are known. \citet{lanzante2021testing} tests various strategies for dealing with temporal
+are known. \citet{lanzante2021testing} tests various strategies for dealing with
+temporal
 dependence and concludes that a test based on Monte-Carlo simulations performed
 the best. When additionally the hypothesized distribution contains unknown
 parameters, the standard KS test becomes even further inapplicable.
@@ -162,7 +165,7 @@ where:
 3) a combination of the first two scenarios.
 In each scenario, the misuse is performed and the impacts are shown. Then, a
 remedy is detailed and performed alongside the misuse to show its positive
-effects. In order to set up the demonstrations, simulated data is used
+effects. In order to set up the demonstrations, simulated data are used
 throughout. The remedies are also performed on various families of
 distributions.
 
@@ -171,7 +174,7 @@ The rest of the paper is organized as follows. Section~\ref{sec:fitted}
 investigates the scenario where the hypothesized distribution has unspecified
 parameters. Both parametric and nonparametric bootstrap are available to fix the
 issue. Section~\ref{sec:dependence} investigates the scenario where the data of
-the empirical distribution is serially dependent. A bootstrap procedure
+the empirical distribution are serially dependent. A bootstrap procedure
 employing copulas to account for dependence is proposed as a working solution.
 Section~\ref{sec:fittedwithdependence}
 explores the case where a combination of the first two scenarios occurs. The
@@ -188,7 +191,7 @@ in this family. Let $F_\theta$ be a family of distributions indexed by parameter
 vector~$\theta$. The null hypothesis is
 \[
   H_0: \text{the random sample $X_1, \ldots, X_n$
-    comes from a distribution $F_\theta$ with some $\theta$.}
+    comes from a distribution $F_\theta$ for some $\theta$.}
 \]
 Since $\theta$ is unknown, one would naturally estimate $\theta$ by
 $\hat\theta_n$ from, for example, maximum likelihood or methods of moments. The
@@ -209,12 +212,12 @@ The consequence of using the wrong null distribution for the KS statistic $D_n$
 in~\eqref{eq:ks_fitted} can be illustrated through a simple simulation study. A
 random sample $X_1, \ldots, X_n$ was generated from the standard normal
 distribution with sample size $n = 100$. The sample mean and sample standard
-deviation were used as $\hat\theta_n$. The p-value of the testing
+deviation were used as $\hat\theta_n$. The p-value of the test
 statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
 \texttt{ks.test()} function in~R with the fitted normal distribution as the
 hypothesized distribution. That is, the hypothesized distribution was
 $N(\bar X, s^2)$ where $\bar X$ is the sample mean and $s^2$ is the sample
-variance. This experiment was repeated for 1000 times and the histogram of the
+variance. This experiment was repeated 1000 times and the histogram of the
 1000 p-values are displayed in Figure~\ref{fig:hist_fitted}. If the test were
 valid, the p-values would be uniformly distributed in the unit
 interval. Clearly, the pattern of the 1000 p-values are very different from what
@@ -223,13 +226,14 @@ distribution.
 
 
 To fix the problem, parametric bootstrap can be used to approximate the null
-distribution of the testing statistic~$D_n$:
+distribution of the test statistic~$D_n$:
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the fitted distribution
   $F_{\hat\theta_n}$
 \item
-  Fit $F_\theta$ to the sample and obtain estimate $\hat\theta_n^*$ of $\theta$.
+  Fit $F_\theta$ to $X_1^*,...,X_n^*$ \eds{verify edit} and obtain estimate 
+	$\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of
   $X_1^*, \ldots,  X_n^*$.
@@ -238,39 +242,47 @@ distribution of the testing statistic~$D_n$:
   \[
     D_n^* = \sqrt{n} \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) |.
   \]
+	\eds{please explicitly define $F_{\hat\theta_n}^*(x)$ here.  Or should it be
+	$F_{{\hat{\theta}_n}^*}(x)$ instead? (Note placement of *)}
 \item
   Repeat the previous steps a large number~$B$ times and use the empirical
-  distribution of $D^*$ to approximate the null distribution of the observed
+  distribution of $D_n^*$ to approximate the null distribution of the observed
   statistic.
 \end{enumerate}
-The p-value of $D_n$ is approximated by the proportion of $D_n^*$'s that are
+The p-value of $D_n$ is approximated by the proportion of the $D_n^*$ 
+statistics that are
 greater than or equal to~$D_n$.
 
 
 Nonparametric bootstrap can also be used to approximate the null distribution
-of the testing statistic with the bias correction from \citet{babu2004goodness}:
+of the test statistic with the bias correction from \citet{babu2004goodness}:
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
   with replacement
 \item
-  Fit $F_\theta$ to the sample and obtain estimate $\hat\theta_n^*$ of $\theta$.
+  Fit $F_\theta$ to $X_1^*,...,X_n^*$ \eds{verify edit} and obtain estimate 
+	$\hat\theta_n^*$ of $\theta$.
 \item
-  Obtain the empirical distribution function of the random sample $F_n^*$
+  Obtain the empirical distribution function $F_n^*$ of
+  $X_1^*, \ldots,  X_n^*$. \eds{verify edit}
 \item
   Calculate bootstrap KS statistic
   \[
     D^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n}^*(x)\right) - B_n(x) |.
   \]
+	\eds{do we want an n subscript on $D^*$?  It is not consistently used below.}
   where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
-  bias term \citep{babu2004goodness}
+  bias term \citep{babu2004goodness}.
+	\eds{same question about $F_{\hat\theta_n}^*(x)$ as above}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of $D^*$ to approximate the null distribution of the observed
-  statistic.
+  statistic. \eds{do we want an n subscript on $D^*$}
 \end{enumerate}
-The p-value of $D_n$ is, again, approximated by the proportion of $D_n^*$'s that
-are greater than or equal to~$D_n$.
+The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
+statistics that
+are greater than or equal to~$D_n$. \eds{do we want an n subscript on $D^*$}
 
 
 
@@ -295,7 +307,7 @@ In the same simulation study, p-values were obtained for the 1000 replicates
 with both the parametric and nonparametric bootstrap procedures. The center and
 right panels of Figure~\ref{fig:hist_fitted} display the histograms of the 1000
 p-values from the parametric and nonparametric bootstrap procedures,
-respectively. This time, both samples of the p-values appear to come from the
+respectively. This time, both samples of p-values appear to come from
 standard uniform distributions.
 
 \section{Serially Dependent Data}
@@ -304,13 +316,13 @@ standard uniform distributions.
 Here we consider the situation where the observed data $X_1, \ldots, X_n$ are
 not independent but serially dependent, and the hypothesized distribution $F$
 contains no unknown parameters. The null distribution of the KS statistic $D_n$
-in~\eqref{eq:ks_standard} changes with the serially dependence.
+in~\eqref{eq:ks_standard} changes with serial dependence.
 When the serial dependence is
-positive, the effective sample size is less than~$n$. The testing statistic
-would be stochastically greater than that obtained from independent data, making
-it more likely to reject the null hypothesis than it should. So the test is
-liberal. The reasoning is similar when the serial dependence is negative,
-in which case, the test is conservative.
+positive, the effective sample size is less than~$n$. The test statistic
+would be stochastically greater than that obtained from independent data, 
+resulting in a test that is too liberal (i.e., the null hypothesis is rejected
+more often than it should). The reasoning is similar when the serial dependence 
+is negative, in which case, the test is conservative.
 
 
 The invalidity of the standard statistic for serially dependent data can be
@@ -321,9 +333,12 @@ series of length 100. For each series, we applied the KS statistic
 in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(0, 1)$
 marginally. The histograms of the p-values from $1000$ replicates for all the
 $\psi$ values are displayed in Figure~\ref{fig:hist_correlation}. When
-$\phi \ne 0$, the histograms do not look like to be generated from a standard
+$\phi \ne 0$, the histograms do not look likely to be generated from a standard
 uniform distribution. Positive $\psi$ values led to liberal p-values while
-negative $\psi$ values led to conservative p-values. The larger the magnitude of
+negative $\psi$ values led to conservative p-values. 
+\eds{can p-values be liberal or conservative?  Not sure, but I think I have only
+ heard of tests being described in this way} 
+The larger the magnitude of
 $\psi$, the bigger the deviation from the desired level.
 
 \begin{figure}[tbp]
@@ -337,15 +352,15 @@ $\psi$, the bigger the deviation from the desired level.
 \end{figure}
 
 
-A complete remedy for the KS tests with serially dependent data is
+A complete remedy for KS tests with serially dependent data is
 challenging. The null distribution depends on the structure of the serial
 dependence, which can be arbitrary in practice. A parametric bootstrap procedure
-would need specify a model for the dependence, whereas the primary interest
+would need to specify a model for the dependence, whereas the primary interest
 is to test the marginal distribution of the stationary series. A block
 nonparametric bootstrap for stationary data \citep{kunsch1989jackknife} is
-attempting, but the counterpart of a bias correction as in
+tempting, but the counterpart of a bias correction as in
 \citet{babu2004goodness} is not available yet. Is there any approach that does
-not require fully specification of the dependence of the stationary process
+not require full specification of the dependence of the stationary process,
 but still gives reasonably satisfactory correction to the size of the KS test in
 certain applications?
 
@@ -371,10 +386,10 @@ function of the standard normal. Then we fit an ARMA$(p, q)$ model to
 $Z_1, \ldots, Z_n$ with AR order $p$ and MA order $q$ selected by the Akaike
 Information Criterion (AIC). This can be done with, for example, function
 \texttt{auto.arima()} from  R package \texttt{forecast}
-\citep{hyndman2008automatic}. Since it is known that the mean of $Z_i$'s are
+\citep{hyndman2008automatic}. Since it is known that the mean of $Z_i$'s is
 zero, it is necessary to set the intercept of the ARMA model as zero in the
 fitting process. The selected ARMA$(p, q)$ model with fitted
-parameters will be used as the working model to generate bootstrap sample with
+parameters will be used as the working model to generate bootstrap samples with
 serial dependence mimicking that in the observed data. The unconditional
 variance $\sigma^2$ of the ARMA model can be obtained with function
 \texttt{tacvfARMA()} from R package \texttt{ltsa} \citep{mcleod2007algorithms}.
@@ -384,7 +399,8 @@ The semiparametric bootstrap procedure is as follows.
 \begin{enumerate}
 \item
   Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process with
-  innovation variance $1 / \sigma^2$ such that the $Z_i$'s are marginally
+  innovation \eds{? inverse?} variance $1 / \sigma^2$ such that the $Z_i$'s are
+	marginally
   standard normal variables.
 \item
   Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$.
@@ -396,23 +412,24 @@ The semiparametric bootstrap procedure is as follows.
   \[
     D^* = \sup_x \lvert F_n^* (x)- F(x) \rvert.
   \]
+	\eds{n subscript for $D^*$? Not consistently used.}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
   the null distribution of the observed statistic.
 \end{enumerate}
-The p-value of $D_n$ is, again, approximated by the proportion of $D_n^*$'s that
-are greater than or equal to~$D_n$.
+The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
+statistics that are greater than or equal to~$D_n$. \eds{n subscript for $D^*$?}
 
 
 This process is semiparametric because the marginal distribution is
 parametrically specified while the dependence structure of the stationary series
 is only approximated. The closer the approximation is to the truth, the better
-performance of the size of the KS test, The dependence structure determined by
+performance of the size of the KS test. The dependence structure determined by
 the working ARMA process approximates a wide class of dependence structures.
 If the true dependence indeed has an ARMA structure, this method is exact. When
-the true dependence is not covered the ARMA model, the working model may still
-give a reasonable approximation that can
+the true dependence is not covered by the ARMA model, the working model may 
+still give a reasonable approximation that can
 be useful for practical purposes. 
 
 
@@ -426,7 +443,8 @@ structures in Figure~\ref{fig:hist_ma1_arma_ar2_D}.
   \includegraphics[width=\textwidth]{hist_ar1_D}
   \caption{The Naive plot (left) is the histogram of p-values from the
   standard KS test. The Copula plot (right) is the histogram of p-values from
-  implementing parametric bootstrap with copulas for dependence. In each case,
+  implementing the parametric \eds{semiparametric?} bootstrap with copulas for
+	dependence. In each case,
   $1000$ replicate tests were performed with the data generated from an AR(1)
   process of the standard normal distribution with $\psi = .5$. The sample size
   is $n = 100$ and $B = 1000$ bootstrap samples are obtained for each test.}
