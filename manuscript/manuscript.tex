@@ -82,7 +82,8 @@ For each scenario, we provide remedies for practical applications.
 \bigskip
 \noindent{\sc Keywords}:
 nonparametric bootstrap;
-parametric bootstrap.
+parametric bootstrap;
+working dependence.
 \end{abstract}
 
 \section{Introduction}
@@ -232,7 +233,7 @@ distribution of the test statistic~$D_n$:
   Draw a random sample $X_1^*,...,X_n^*$ from the fitted distribution
   $F_{\hat\theta_n}$
 \item
-  Fit $F_\theta$ to $X_1^*,...,X_n^*$ \eds{verify edit} and obtain estimate 
+  Fit $F_\theta$ to $X_1^*,...,X_n^*$ and obtain estimate 
 	$\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of
@@ -240,10 +241,8 @@ distribution of the test statistic~$D_n$:
 \item
   Calculate bootstrap KS statistic
   \[
-    D_n^* = \sqrt{n} \sup_x | F_n^* (x)- F_{\hat\theta_n}^*(x) |.
+    D_n^* = \sqrt{n} \sup_x | F_n^* (x)- F_{\hat\theta_n^*}(x) |.
   \]
-	\eds{please explicitly define $F_{\hat\theta_n}^*(x)$ here.  Or should it be
-	$F_{{\hat{\theta}_n}^*}(x)$ instead? (Note placement of *)}
 \item
   Repeat the previous steps a large number~$B$ times and use the empirical
   distribution of $D_n^*$ to approximate the null distribution of the observed
@@ -261,7 +260,7 @@ of the test statistic with the bias correction from \citet{babu2004goodness}:
   Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
   with replacement
 \item
-  Fit $F_\theta$ to $X_1^*,...,X_n^*$ \eds{verify edit} and obtain estimate 
+  Fit $F_\theta$ to $X_1^*,...,X_n^*$ and obtain estimate 
 	$\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of
@@ -269,21 +268,17 @@ of the test statistic with the bias correction from \citet{babu2004goodness}:
 \item
   Calculate bootstrap KS statistic
   \[
-    D^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n}^*(x)\right) - B_n(x) |.
+    D_n^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n^*}(x)\right) - B_n(x) |.
   \]
-	\eds{do we want an n subscript on $D^*$?  It is not consistently used below.}
   where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
   bias term \citep{babu2004goodness}.
-	\eds{same question about $F_{\hat\theta_n}^*(x)$ as above}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
-  distribution of $D^*$ to approximate the null distribution of the observed
-  statistic. \eds{do we want an n subscript on $D^*$}
+  distribution of $D_n^*$ to approximate the null distribution of the observed
+  statistic. 
 \end{enumerate}
 The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
-statistics that
-are greater than or equal to~$D_n$. \eds{do we want an n subscript on $D^*$}
-
+statistics that are greater than or equal to~$D_n$. 
 
 
 \begin{figure}[tbp]
@@ -334,11 +329,11 @@ in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(0, 1)$
 marginally. The histograms of the p-values from $1000$ replicates for all the
 $\psi$ values are displayed in Figure~\ref{fig:hist_correlation}. When
 $\phi \ne 0$, the histograms do not look likely to be generated from a standard
-uniform distribution. Positive $\psi$ values led to liberal p-values while
-negative $\psi$ values led to conservative p-values. 
-\eds{can p-values be liberal or conservative?  Not sure, but I think I have only
- heard of tests being described in this way} 
-The larger the magnitude of
+uniform distribution. Positive $\psi$ values led to p-values with a distribution
+function higher than the standard uniform distribution function and, hence,
+conservative tests. Negative $\psi$ values led to p-values with a distribution
+function lower than the standard uniform distribution and, hence, liberal
+tests. The larger the magnitude of
 $\psi$, the bigger the deviation from the desired level.
 
 \begin{figure}[tbp]
@@ -388,7 +383,10 @@ Information Criterion (AIC). This can be done with, for example, function
 \texttt{auto.arima()} from  R package \texttt{forecast}
 \citep{hyndman2008automatic}. Since it is known that the mean of $Z_i$'s is
 zero, it is necessary to set the intercept of the ARMA model as zero in the
-fitting process. The selected ARMA$(p, q)$ model with fitted
+fitting process. This restriction turned out to be critical in our
+investigation; having the intercept estimated does not lead to desired p-value
+distributions in the following bootstrap process.
+The selected ARMA$(p, q)$ model with fitted
 parameters will be used as the working model to generate bootstrap samples with
 serial dependence mimicking that in the observed data. The unconditional
 variance $\sigma^2$ of the ARMA model can be obtained with function
@@ -400,7 +398,7 @@ The semiparametric bootstrap procedure is as follows.
 \item
   Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process with
   innovation \eds{? inverse?} variance $1 / \sigma^2$ such that the $Z_i$'s are
-	marginally
+	marginally \jy{yes, it means the innovation series of an ARMA process.}
   standard normal variables.
 \item
   Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$.
@@ -410,23 +408,23 @@ The semiparametric bootstrap procedure is as follows.
 \item
   Calculate bootstrap KS statistic
   \[
-    D^* = \sup_x \lvert F_n^* (x)- F(x) \rvert.
+    D_n^* = \sup_x \lvert F_n^* (x)- F(x) \rvert.
   \]
-	\eds{n subscript for $D^*$? Not consistently used.}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
   the null distribution of the observed statistic.
 \end{enumerate}
 The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
-statistics that are greater than or equal to~$D_n$. \eds{n subscript for $D^*$?}
+statistics that are greater than or equal to~$D_n$. 
 
 
 This process is semiparametric because the marginal distribution is
 parametrically specified while the dependence structure of the stationary series
-is only approximated. The closer the approximation is to the truth, the better
-performance of the size of the KS test. The dependence structure determined by
-the working ARMA process approximates a wide class of dependence structures.
+is only approximated by that of an ARMA process with normal distributions.
+The closer the approximation is to the truth, the better
+performance of the size of the KS test. The normal copula of the working ARMA
+process provides a wide class of dependence structures.
 If the true dependence indeed has an ARMA structure, this method is exact. When
 the true dependence is not covered by the ARMA model, the working model may 
 still give a reasonable approximation that can
