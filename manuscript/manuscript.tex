@@ -298,6 +298,10 @@ statistics that are greater than or equal to~$D_n$.
 \jy{Anthony, could you label the panels as ``Parametric bootstrap'' and
   ``Nonparametric bootstrap'' for the center and right panels?}
 
+\jy{Simulation study: let's use two distributions:
+  $N(8, 8)$ and $\Gamma(8, 1)$. These two distributions have the same means and
+  variances. So we could use them to study powers of the tests too.}
+
 In the same simulation study, p-values were obtained for the 1000 replicates
 with both the parametric and nonparametric bootstrap procedures. The center and
 right panels of Figure~\ref{fig:hist_fitted} display the histograms of the 1000
@@ -319,6 +323,9 @@ resulting in a test that is too liberal (i.e., the null hypothesis is rejected
 more often than it should). The reasoning is similar when the serial dependence 
 is negative, in which case, the test is conservative.
 
+\jy{For the same two marginal distributions $N(8, 8)$ and $\Gamma(8, 1)$, let's
+  generate data from dependence structures of AR(1) with two coefficients
+  $\psi \in \{ -0. 5, 0.5\}$.}
 
 The invalidity of the standard statistic for serially dependent data can be
 illustrated by a simple simulation study. Consider a first-order autoregressive
@@ -431,6 +438,11 @@ still give a reasonable approximation that can
 be useful for practical purposes. 
 
 
+
+\jy{Here we work on the same marginal distributions $N(8, 8)$ and $\Gamma(8, 1)$
+  with different dependence structures:
+  ARMA(1, 1); MA(2); AR(2)
+  }
 Continuing with the simulation study, 
 Throughout the simulation we assume a working AR(1) dependence structure
 regardless of the true dependence. This is demonstrated with different dependence
@@ -510,6 +522,9 @@ is shown to be applicable regardless of the family of distribution tested.
 \section{Unspecified Parameters and Serially Dependent Data}
 \label{sec:fittedwithdependence}
 
+\jy{need a paragraph to describe the misuse and explain the results. Repeat the
+  study at the begining of the last section.}
+
 For testing distributions with unspecified parameters with serially dependent
 data, we can modify the procedure in the last section. In preparation, let
 $\hat\theta_n$ be the marginally fitted parameters, and let
@@ -530,8 +545,8 @@ significance of the observed KS statistic.
   $i = 1, \ldots, n$, whose first-order sample Spearman's rho matches that of
   the observed data.
 \item
-  Fit $F_\theta$ to the sample $X_1^*, \ldots, X_n^*$ and obtain estimator
-  $\hat\theta_n^*$
+  Fit $F_\theta$ to the bootstrap sample $X_1^*, \ldots, X_n^*$ and obtain estimator
+  $\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of the bootstrap sample
   $X_1^*, \ldots, X_n^*$.
@@ -542,9 +557,11 @@ significance of the observed KS statistic.
   \]
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
-    distribution of the $B$ test statistics to approximate
-    the null distribution of the observed statistic.
+  distribution of the $B$ test statistics to approximate
+  the null distribution of the observed statistic.
 \end{enumerate}
+
+\jy{For the simulation study, repeat the study at the end of the last section.}  
 
 \begin{figure}[tbp]
   \centering
@@ -559,6 +576,7 @@ significance of the observed KS statistic.
   is $n = 100$ and $B = 1000$ bootstrap samples are obtained for each test.}
   \label{fig:hist_ar1_FD}
 \end{figure}
+
 
 Figure~\ref{fig:hist_ar1_FD} shows the results of our simulation on data
 simulated from an AR(1) process. As should be expected, naively fitting
