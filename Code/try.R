@@ -44,7 +44,7 @@ nm.s.f <- replicate(nrep, ks.test.fitted(genData(n, .3, numeric(0), nmqdist), "n
 ## if serial dependence is ignored
 nm._.f <- replicate(nrep, ks.test.fitted(genData(n, .3, numeric(0), nmqdist), "norm", param = c(mean = 1, sd = 2), fit = TRUE, serial = FALSE)$p.value)
 
-save(gm.f, nm.f
+save(gm.f, nm.f,
      gm.s, gm._, nm.s, nm._,
      gm.s.f, gm._.f, nm.s.f, nm._.f,
      file = "sim.rda")
