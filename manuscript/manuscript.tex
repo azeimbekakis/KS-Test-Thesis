@@ -106,7 +106,7 @@ the supremum of standard Brownian bridge \citep{kolmogorov1933sulla}. For large
 samples, the tests can be performed with a table \citep{smirnov1948table}.
 Critical values for small samples ($n \le 35$) have also been given
 \citep{massey1951kolmogorov}. The KS test is available in popular
-statistical software packages, such as function \texttt{ks.test} in R package
+statistical software packages, such as function \texttt{ks.test()} in R package
 \textsf{stats} \citep{R, marsaglia2003evaluating}.
 
 
@@ -168,7 +168,8 @@ In each scenario, the misuse is performed and the impacts are shown. Then, a
 remedy is detailed and performed alongside the misuse to show its positive
 effects. In order to set up the demonstrations, simulated data are used
 throughout. The remedies are also performed on various families of
-distributions.
+distributions. An R implementation of the proposed methods will be available
+after the paper is published.
 
 
 The rest of the paper is organized as follows. Section~\ref{sec:fitted}
@@ -278,7 +279,8 @@ of the test statistic with the bias correction from \citet{babu2004goodness}:
   statistic. 
 \end{enumerate}
 The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
-statistics that are greater than or equal to~$D_n$. 
+statistics that are greater than or equal to~$D_n$. Note that the step~1 and
+step~4 are different from the parametric bootstrap version.
 
 
 \begin{figure}[tbp]
@@ -314,8 +316,13 @@ standard uniform distributions.
 
 Here we consider the situation where the observed data $X_1, \ldots, X_n$ are
 not independent but serially dependent, and the hypothesized distribution $F$
-contains no unknown parameters. The null distribution of the KS statistic $D_n$
-in~\eqref{eq:ks_standard} changes with serial dependence.
+contains no unknown parameters. That is,
+\[
+H_0: \text{$X_i$'s have marginal distribution $F$.}
+\]
+The KS statistic $D_n$ in~\eqref{eq:ks_standard}
+is still a good measure of deviation from the null hypothesis. Nonetheless, the
+null distribution of $F_n$ changes when there is serial dependence.
 When the serial dependence is
 positive, the effective sample size is less than~$n$. The test statistic
 would be stochastically greater than that obtained from independent data, 
@@ -396,7 +403,8 @@ distributions in the following bootstrap process.
 The selected ARMA$(p, q)$ model with fitted
 parameters will be used as the working model to generate bootstrap samples with
 serial dependence mimicking that in the observed data. The unconditional
-variance $\sigma^2$ of the ARMA model can be obtained with function
+variance $\sigma^2$ of the ARMA model with unit innovation variance can be
+obtained with function
 \texttt{tacvfARMA()} from R package \texttt{ltsa} \citep{mcleod2007algorithms}.
 
 
@@ -436,7 +444,6 @@ If the true dependence indeed has an ARMA structure, this method is exact. When
 the true dependence is not covered by the ARMA model, the working model may 
 still give a reasonable approximation that can
 be useful for practical purposes. 
-
 
 
 \jy{Here we work on the same marginal distributions $N(8, 8)$ and $\Gamma(8, 1)$
@@ -485,7 +492,9 @@ in the data, appears to be uniform and restores the size of the KS test.
 \end{figure}
 
 \jy{to be rewritten when the figures are generated.}
-\jy{I suggest that we keep using gamma as the marginal distribution throughout.}
+\jy{I suggest that we keep using gamma as the marginal distribution
+  throughout. Elizabeth, let's finalize the settings next time we meet. I've
+  implemented a concise version of the test.}
 
 The procedure detailed in this section can also provide a reasonable
 approximation in cases where the true dependence structure is not far from
@@ -522,44 +531,58 @@ is shown to be applicable regardless of the family of distribution tested.
 \section{Unspecified Parameters and Serially Dependent Data}
 \label{sec:fittedwithdependence}
 
-\jy{need a paragraph to describe the misuse and explain the results. Repeat the
-  study at the begining of the last section.}
+When the observed sample $X_1, \ldots, X_n$ is no longer a random sample but
+a serially dependent stationary series, we may still be interested in testing
+whether marginally each $X_i$ follows hypothesized distribution with unknown
+parameters. That is, the null hypothesis is
+\[
+H_0: \text{$X_i$'s have marginal distribution $F_\theta$ for some $\theta$}.
+\]
+The testing statistic $D_n$ in Equation~\eqref{eq:ks_fitted} still measures the
+deviation from $H_0$, but its null distribution depends on the serial
+dependence. The bootstrap procedure in the last section can be adapted to handle
+this situation.
 
-For testing distributions with unspecified parameters with serially dependent
-data, we can modify the procedure in the last section. In preparation, let
-$\hat\theta_n$ be the marginally fitted parameters, and let
-$Z_i = \Phi^{-1} \{F_{\hat\theta_n}(X_i)\}$, $i = 1, \ldots, n$.
-For $Z_i$'s that are marginally standard normal variables, we fit an
-ARMA$(p,q)$ model with AR order $p$ and MA order $q$ selected by AIC as in the
-last section. Let $\sigma^2$ be the unconditional variance of the fitted ARMA
-process. We propose the following bootstrap procedure to assess the
-significance of the observed KS statistic.
 
+Specifically, let $\hat\theta_n$ be the marginally fitted parameters, and
+$Z_i = \Phi^{-1} \{F_{\hat\theta_n}(X_i)\}$, $i = 1, \ldots, n$ be a
+transformation of the observed data onto the standard normal scale using the
+fitted parameters $\hat\theta_n$. We then fit an ARMA model with orders
+selected by the AIC using function \texttt{auto.arima()} from R package
+\texttt{forecase}. This ARMA model will be used as the working model to
+introduce serial dependence in the bootstrap samples. Similarly, we obtain the
+unconditional variance $\sigma^2$ of the ARMA process with unit innovation
+variance. Our semiparametric bootstrap procedure is as follows
 
 \begin{enumerate}
 \item
-  Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process
-  with innovation variance $1 / \sigma^2$ such that the $Z_i$'s are $N(0, 1)$ variables.
+  Generate $Z_1^*, \ldots, Z_n^*$ from the working ARMA$(p, q)$ model with
+  innovation variance $1 / \sigma^2$ such that the $Z_i$'s are marginally
+  standard normal variables.
 \item
-  Form a bootstrap sample $X_i^* = F^{-1}_{\hat\theta_n} [\Phi(Z_i)]$,
-  $i = 1, \ldots, n$, whose first-order sample Spearman's rho matches that of
-  the observed data.
+  Form a bootstrap sample
+  $X_i^* = F_{\hat\theta_n}^{-1} [\Phi(Z_i^*)]$, $i = 1, \ldots, n$.
 \item
-  Fit $F_\theta$ to the bootstrap sample $X_1^*, \ldots, X_n^*$ and obtain estimator
-  $\hat\theta_n^*$ of $\theta$.
+  Fir $F_\theta$ to $X_1^*, \ldots, X_n^*$ to obtain estimate $\hat\theta_n^*$
+  of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of the bootstrap sample
   $X_1^*, \ldots, X_n^*$.
 \item
   Calculate bootstrap KS statistic
   \[
-    D^* = \sup_x \lvert F_n^* (x)- F_{\hat\theta_n^*}(x) \rvert.
+    D_n^* = \sup_x \lvert F_n^* (x) - F_{\hat\theta_n}^* (x) \rvert.
   \]
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
   the null distribution of the observed statistic.
 \end{enumerate}
+The p-value of $D_n$ is approximated by the proportion of the $D_n^*$
+statistics that are greater than or equal to~$D_n$. Compared to the algorithm in
+the last section, here we use $F_{\hat\theta_n}$ and $F_{\hat\theta_n}^*$ in
+place of the known~$F$.
+
 
 \jy{For the simulation study, repeat the study at the end of the last section.}  
 
