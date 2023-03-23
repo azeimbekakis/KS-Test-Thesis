@@ -168,7 +168,11 @@ where:
 3) a combination of the first two scenarios.
 In each scenario, the misuse is performed and the impacts are shown. Then, a
 remedy is detailed and performed alongside the misuse to show its positive
-effects. In order to set up the demonstrations, simulated data are used
+effects. Specifically, unspecified parameters are handled by parametric
+bootstrap; serial dependence is handled by introducing a working autoregressive
+moving average (ARMA) model that preserves the serial dependence for a wide
+range of dependence structures.
+In order to set up the demonstrations, simulated data are used
 throughout. The remedies are also performed on various families of
 distributions. An R implementation of the proposed methods will be available
 after the paper is published.
@@ -178,11 +182,10 @@ The rest of the paper is organized as follows. Section~\ref{sec:fitted}
 investigates the scenario where the hypothesized distribution has unspecified
 parameters. Both parametric and nonparametric bootstrap are available to fix the
 issue. Section~\ref{sec:dependence} investigates the scenario where the data of
-the empirical distribution are serially dependent. A bootstrap procedure
-employing copulas to account for dependence is proposed as a working solution.
-Section~\ref{sec:fittedwithdependence}
-explores the case where a combination of the first two scenarios occurs. The
-copula procedure can be adjusted for the use of fitted parameters as a remedy.
+the empirical distribution are serially dependent. An bootstrap procedure
+employing a working ARMA model to account for dependence is proposed as a
+working solution. Section~\ref{sec:fittedwithdependence}
+explores the case where a combination of the first two scenarios occurs.
 Section~\ref{sec:conclusion} concludes with a discussion.
 
 \section{Unspecified Parameters}
@@ -267,7 +270,7 @@ of the test statistic with the bias correction from \citet{babu2004goodness}:
 	$\hat\theta_n^*$ of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of
-  $X_1^*, \ldots,  X_n^*$. \eds{verify edit}
+  $X_1^*, \ldots,  X_n^*$. \eds{verify edit} \jy{Good.}
 \item
   Calculate bootstrap KS statistic
   \[
@@ -378,20 +381,18 @@ certain applications?
 
 We propose a semiparametric bootstrap procedure that assumes a working serial
 dependence structure which does not need to be correctly specified. The working
-serial dependence is introduced through copulas with the hope to approximate the
-true serial dependence as allowed by the working copulas. A copula is a
-multivariate distribution with standard uniform marginal distributions, which
-completely characterizes the dependence structure of a multivariate
-distribution \citep{hofert2018elements}. It separates the dependence structure
-of a multivariate distribution from its marginal distributions. The normal copula
-is the copula determined by the multivariate normal distribution. We propose to
-use a normal working copula to approximate the serial
-dependence of the observations.
-
-
+serial dependence is introduced through a working ARMA process with the hope to
+approximate the true serial dependence as allowed by the working
+model. Essentially, this working model covers the most commonly seen dependence
+structure characterized by a normal copula \citep{hofert2018elements}, which
+separates the dependence structure
+of a multivariate distribution from its marginal distributions. 
 The parameters of the working normal copula are
-estimated from fitting an auto-regressive moving average (ARMA) model to the
-observed data transformed to the standard normal scale. In particular, let
+estimated from fitting an ARMA model to the
+observed data transformed to the standard normal scale.
+
+
+In particular, let
 $Z_i = \Phi^{-1}\{ F(X_i)\}$, $i = 1, \ldots, n$, where $\Phi$ is the distribution
 function of the standard normal. Then we fit an ARMA$(p, q)$ model to
 $Z_1, \ldots, Z_n$ with AR order $p$ and MA order $q$ selected by the Akaike
@@ -418,7 +419,8 @@ The semiparametric bootstrap procedure is as follows.
 	marginally \jy{yes, it means the innovation series of an ARMA process.}
   standard normal variables.
 \item
-  Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$.
+  Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$,
+  where $F^{-1}$ is the quantile function of $F$.
 \item
   Obtain the empirical distribution function $F_n^*$ of the bootstrap sample
   $X_1^*, \ldots, X_n^*$.
@@ -551,10 +553,10 @@ $Z_i = \Phi^{-1} \{F_{\hat\theta_n}(X_i)\}$, $i = 1, \ldots, n$ be a
 transformation of the observed data onto the standard normal scale using the
 fitted parameters $\hat\theta_n$. We then fit an ARMA model with orders
 selected by the AIC using function \texttt{auto.arima()} from R package
-\texttt{forecase}. This ARMA model will be used as the working model to
-introduce serial dependence in the bootstrap samples. Similarly, we obtain the
+\texttt{forecast}. This ARMA model will be used as the working model to
+introduce serial dependence in the bootstrap samples. Again, we obtain the
 unconditional variance $\sigma^2$ of the ARMA process with unit innovation
-variance. Our semiparametric bootstrap procedure is as follows
+variance. Our semiparametric bootstrap procedure is as follows.
 
 \begin{enumerate}
 \item
@@ -563,7 +565,8 @@ variance. Our semiparametric bootstrap procedure is as follows
   standard normal variables.
 \item
   Form a bootstrap sample
-  $X_i^* = F_{\hat\theta_n}^{-1} [\Phi(Z_i^*)]$, $i = 1, \ldots, n$.
+  $X_i^* = F_{\hat\theta_n}^{-1} [\Phi(Z_i^*)]$, $i = 1, \ldots, n$, where
+  $F_{\hat\theta_n}^{-1}$ is the quantile function of $F_{\hat\theta_n}$.
 \item
   Fir $F_\theta$ to $X_1^*, \ldots, X_n^*$ to obtain estimate $\hat\theta_n^*$
   of $\theta$.
