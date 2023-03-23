@@ -48,13 +48,12 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
                          param = c()) {
     ## if estimation is needed, fit marginal distribution
     ddist <- get(paste0("d", dist))
-    if (fit) param  <- MASS::fitdistr(x, ddist, start = split(param, names(param)))$estimate
+    if (fit)
+        param  <- MASS::fitdistr(x, ddist, start = split(param, names(param)))$estimate
     pdist <- fitteddist(dist, param, "p")
     rdist <- fitteddist(dist, param, "r")
-    ## get observed ks-stat
-    stat <- ks.test(x, pdist)$statistic
-    stat.b <- double(B)
-    n <- length(x)
+    qdist <- fitteddist(dist, param, "q")
+    working <- list(ar = numeric(0), ma = numeric(0))
     ## working, sigma, qdist are only used when serial == TRUE
     if (serial) {
         z <- qnorm(pdist(x))
@@ -64,6 +63,10 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
         sigma <- sqrt(tacvfARMA.my(phi = working$ar, theta = - working$ma, maxLag = 0))     
         qdist <- fitteddist(dist, param, "q")
     }
+    ## get observed ks-stat
+    stat <- ks.test(x, pdist)$statistic
+    stat.b <- double(B)
+    n <- length(x)
     ## bootstrapping
     for (i in 1:B) {
         if (serial)
