@@ -7,7 +7,7 @@ param <- c(shape = 2, scale = 3)
 dist <- "gamma"
 start <- c(shape = 1, scale = 1)
 
-nrep <- 2
+nrep <- 1000
 
 gm.f <- replicate(nrep, ks.test.fitted(rgamma(n, shape = 2, scale = 3), "gamma", param = start, fit = TRUE, serial = FALSE)$p.value)
 
