@@ -182,7 +182,7 @@ The rest of the paper is organized as follows. Section~\ref{sec:fitted}
 investigates the scenario where the hypothesized distribution has unspecified
 parameters. Both parametric and nonparametric bootstrap are available to fix the
 issue. Section~\ref{sec:dependence} investigates the scenario where the data of
-the empirical distribution are serially dependent. An bootstrap procedure
+the empirical distribution are serially dependent. A bootstrap procedure
 employing a working ARMA model to account for dependence is proposed as a
 working solution. Section~\ref{sec:fittedwithdependence}
 explores the case where a combination of the first two scenarios occurs.
@@ -225,7 +225,7 @@ statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
 hypothesized distribution. That is, the hypothesized distribution was
 $N(\bar X, s^2)$ where $\bar X$ is the sample mean and $s^2$ is the sample
 variance. This experiment was repeated 1000 times and the histogram of the
-1000 p-values are displayed in Figure~\ref{fig:hist_fitted}. If the test were
+1000 p-values are displayed in Figure~\ref{fig:pp_f}. If the test were
 valid, the p-values would be uniformly distributed in the unit
 interval. Clearly, the pattern of the 1000 p-values are very different from what
 one would expect to see from 1000 draws from the standard uniform
@@ -260,58 +260,26 @@ greater than or equal to~$D_n$.
 
 
 Nonparametric bootstrap can also be used to approximate the null distribution
-of the test statistic with the bias correction from \citet{babu2004goodness}:
-\begin{enumerate}
-\item
-  Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
-  with replacement
-\item
-  Fit $F_\theta$ to $X_1^*,...,X_n^*$ and obtain estimate 
-	$\hat\theta_n^*$ of $\theta$.
-\item
-  Obtain the empirical distribution function $F_n^*$ of
-  $X_1^*, \ldots,  X_n^*$. \eds{verify edit} \jy{Good.}
-\item
-  Calculate bootstrap KS statistic
-  \[
-    D_n^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n^*}(x)\right) - B_n(x) |.
-  \]
-  where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
-  bias term \citep{babu2004goodness}.
-\item
-  Repeat the previous steps a large number $B$ times and use the empirical
-  distribution of $D_n^*$ to approximate the null distribution of the observed
-  statistic. 
-\end{enumerate}
-The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
-statistics that are greater than or equal to~$D_n$. Note that the step~1 and
-step~4 are different from the parametric bootstrap version.
+of the test statistic except that a bias correction is needed
+\citet{babu2004goodness}. Details of the nonparametric bootstrap procedure is
+in the Appendix. The results from nonparametric bootstrap are similar to those
+from the parametric bootstrap and, hence, are omitted.
 
 
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{hist_fitted}
-  \caption{Histograms of p-values for the KS test with unspecified parameters in
-    the hypothesized distribution based on 1000 replicates of sample size
-    $n = 100$. Naive (left): KS test with KS statistic calculated based on fitted
-    parameters. Parametric bootstrap (center): KS test with parametric
-    bootstrap. Nonparametric bootstrap (right): KS test with nonparametric
-    bootstrap using the bias correction from \citet{babu2004goodness}.
-    \eds{perhaps use density hist vs
-	freq. hist (here and elsewhere)?}}
-  \label{fig:hist_fitted}
+  \caption{PP-plot for the p-values obtained from KS tests with unspecified
+    parameters with sample size $n = 200$ based on 1000 replicats. The data
+    generating models were $N(8, 8)$ and $\Gamma(8, 1)$.
+  }
+  \label{fig:pp_f}
 \end{figure}
 
-\jy{Anthony, could you label the panels as ``Parametric bootstrap'' and
-  ``Nonparametric bootstrap'' for the center and right panels?}
-
-\jy{Simulation study: let's use two distributions:
-  $N(8, 8)$ and $\Gamma(8, 1)$. These two distributions have the same means and
-  variances. So we could use them to study powers of the tests too.}
 
 In the same simulation study, p-values were obtained for the 1000 replicates
 with both the parametric and nonparametric bootstrap procedures. The center and
-right panels of Figure~\ref{fig:hist_fitted} display the histograms of the 1000
+right panels of Figure~\ref{fig:pp_f} display the histograms of the 1000
 p-values from the parametric and nonparametric bootstrap procedures,
 respectively. This time, both samples of p-values appear to come from
 standard uniform distributions.
@@ -335,9 +303,6 @@ resulting in a test that is too liberal (i.e., the null hypothesis is rejected
 more often than it should). The reasoning is similar when the serial dependence 
 is negative, in which case, the test is conservative.
 
-\jy{For the same two marginal distributions $N(8, 8)$ and $\Gamma(8, 1)$, let's
-  generate data from dependence structures of AR(1) with two coefficients
-  $\psi \in \{ -0. 5, 0.5\}$.}
 
 The invalidity of the standard statistic for serially dependent data can be
 illustrated by a simple simulation study. Consider a first-order autoregressive
@@ -358,11 +323,13 @@ $\psi$, the bigger the deviation from the desired level.
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{hist_correlation}
-  \caption{Histograms of p-values for the KS test applied to data generated from
-    AR(1) processes with AR coefficients
-    $\psi \in \{-0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3\}$
-    based on 1000 replicates of sample size $n = 100$.}
-  \label{fig:hist_correlation}
+  \caption{PP-plots for the p-values obtained from KS test with serial
+    dependence discarded and sample size $n = 200$ based on 1000
+    replicates. The data have marginal distributions $N(8, 8)$ and
+    $\Gamma(8, 1)$, with an AR(1) dependence structure on the standard normal
+    scale. The AR coefficients were $\psi \in \{-0.3, -0.1,  0.1,  0.3\}$.
+  }
+  \label{fig:pp_s}
 \end{figure}
 
 
@@ -450,86 +417,19 @@ still give a reasonable approximation that can
 be useful for practical purposes. 
 
 
-\jy{Here we work on the same marginal distributions $N(8, 8)$ and $\Gamma(8, 1)$
-  with different dependence structures:
-  ARMA(1, 1); MA(2); AR(2)
+\jy{describe the simulation setting here.}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\textwidth]{hist_correlation}
+  \caption{PP-plots for the p-values obtained from KS test with serial
+    dependence accounted for through a working ARMA model and $n = 200$ based on
+    1000 replicates. The data have marginal distributions $N(8, 8)$ and
+    $\Gamma(8, 1)$. The dependence structure on the standard normal scale was
+    characterized by ARMA(1, 1) model, AR(2) model, and MA(1) model.
   }
-Continuing with the simulation study, 
-Throughout the simulation we assume a working AR(1) dependence structure
-regardless of the true dependence. This is demonstrated with different dependence
-structures in Figure~\ref{fig:hist_ma1_arma_ar2_D}.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\textwidth]{hist_ar1_D}
-  \caption{The Naive plot (left) is the histogram of p-values from the
-  standard KS test. The Copula plot (right) is the histogram of p-values from
-  implementing the parametric \eds{semiparametric?} bootstrap with copulas for
-	dependence. In each case,
-  $1000$ replicate tests were performed with the data generated from an AR(1)
-  process of the standard normal distribution with $\psi = .5$. The sample size
-  is $n = 100$ and $B = 1000$ bootstrap samples are obtained for each test.}
-  \label{fig:hist_ar1_D}
+  \label{fig:pp_ss}
 \end{figure}
-
-Figure~\ref{fig:hist_ar1_D} displays the results of the copula remedy for
-dependent data. The data is generated from the standard normal distribution with
-an AR(1) dependence structure where $\psi = .5$. The copula used is to model
-dependence is the normal copula. The distribution of p-values is again expected
-to be $U(0, 1)$ for a valid test. The Naive plot is clearly not uniform and
-reinforces the results shown in Figure~\ref{fig:hist_correlation}. The Copula
-plot, which implements the aforementioned procedure to correct for dependence
-in the data, appears to be uniform and restores the size of the KS test.
-
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\textwidth]{hist_ma1_arma_ar2_D}
-  \caption{The Naive plots are the histograms of p-values from the standard KS
-  test. The Copula plots are the histograms of p-values from parametric
-  bootstrap with copulas for dependence. The data is generated from an MA(1)
-  process (left) with $\theta = .5$, ARMA(1, 1) process (middle) with $\psi =
-  .5$ and $\theta = .3$, and AR(2) process (right) with $\psi = (.5, .3)$ of the
-  standard normal distribution. In each case, $1000$ replicate tests were
-  performed with sample size $n = 100$ and $B = 1000$ bootstrap samples.}
-  \label{fig:hist_ma1_arma_ar2_D}
-\end{figure}
-
-\jy{to be rewritten when the figures are generated.}
-\jy{I suggest that we keep using gamma as the marginal distribution
-  throughout. Elizabeth, let's finalize the settings next time we meet. I've
-  implemented a concise version of the test.}
-
-The procedure detailed in this section can also provide a reasonable
-approximation in cases where the true dependence structure is not far from
-AR(1). Figure~\ref{fig:hist_ma1_arma_ar2_D} shows the distribution of p-values
-for dependence structures MA(1), ARMA(1, 1), and AR(2). As expected,
-naively performing the KS test without correcting for dependence provides plots
-of p-values that deviate from the uniform distribution. In the case of MA(1)
-and ARMA(1, 1), the true dependence structure is close enough to our
-assumption of AR(1) that the bootstrap procedure provides a reasonable
-approximation. However, the AR(2) copula plot shows the limitation of this
-technique as no AR(1) process can approximate an AR(2) process unless the
-second-order coefficient is close to zero.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\textwidth]{hist_gamma_gev_D}
-  \caption{The Naive plots are the histograms of p-values from the standard KS
-  test. The Copula plots are the histograms of p-values from parametric
-  bootstrap with copulas for dependence. The data is generated from $Gamma(3,
-  1)$ (left) and $GEV(0, .2, 1)$ (right) with a correlation coefficient of $r =
-  0.5$. In each case, $1000$ replicate tests were performed with sample size $n
-  = 100$ and $B = 1000$ bootstrap samples.}
-  \label{fig:hist_gamma_gev_D}
-\end{figure}
-
-To further demonstrate the effectiveness of the procedure, we perform similar
-simulations on other families of distributions.
-Figure~\ref{fig:hist_gamma_gev_D} displays the results of tests using dependent
-data generated from the gamma and the generalized extreme value distributions.
-The procedure corrects the distribution of p-values for both distributions and
-is shown to be applicable regardless of the family of distribution tested.
 
 
 \section{Unspecified Parameters and Serially Dependent Data}
@@ -589,45 +489,17 @@ the last section, here we use $F_{\hat\theta_n}$ and $F_{\hat\theta_n}^*$ in
 place of the known~$F$.
 
 
-\jy{For the simulation study, repeat the study at the end of the last section.}  
-
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{hist_ar1_FD}
-  \caption{The Super Naive plot (left) is the histogram of p-values from the
-  standard KS test with fitted parameters. The Naive Parametric plot (middle) is
-  the histogram of p-values from implementing parametric bootstrap. The Copula
-  plot is the histogram of p-values from implementing parametric bootstrap with
-  copulas for dependence and correcting for fitted parameters. In each case,
-  $1000$ replicate tests were performed with the data generated from an AR(1)
-  process of the standard normal distribution with $\psi = .5$. The sample size
-  is $n = 100$ and $B = 1000$ bootstrap samples are obtained for each test.}
-  \label{fig:hist_ar1_FD}
-\end{figure}
-
-
-Figure~\ref{fig:hist_ar1_FD} shows the results of our simulation on data
-simulated from an AR(1) process. As should be expected, naively fitting
-parameters while providing no adjustment for dependent data invalidates the KS
-test. As well, only using the parametric bootstrap remedy for fitted parameters
-from Section~\ref{sec:fitted} seems to provide weaker results than the
-copula remedy presented above. The results show that copula remedy generates
-uniform p-values and restores the size of the KS test.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\textwidth]{hist_ma1_arma_ar2_FD}
-  \caption{The Super Naive plots (left) are the histograms of p-values from the
-  standard KS test with fitted parameters. The Naive Parametric plots (middle)
-  are the histograms of p-values from implementing parametric bootstrap. The
-  Copula plots (bottom) are the histograms of p-values from implementing
-  parametric bootstrap with copulas for dependence and correcting for fitted
-  parameters. The data is generated from an MA(1) process (left) with
-  $\theta = .5$, ARMA(1, 1) process (middle) with $\psi = .5$ and $\theta = .3$,
-  and AR(2) process (right) with $\psi = (.5, .3)$ of the standard normal
-  distribution. In each case, $1000$ replicate tests were performed with sample
-  size $n = 100$ and $B = 1000$ bootstrap samples.}
-  \label{fig:hist_ma1_arma_ar2_FD}
+  \includegraphics[width=\textwidth]{hist_correlation}
+  \caption{PP-plots for the p-values obtained from KS test with unspecified
+    parameters and serial
+    dependence accounted for through a working ARMA model and $n = 200$ based on
+    1000 replicates. The data have marginal distributions $N(8, 8)$ and
+    $\Gamma(8, 1)$. The dependence structure on the standard normal scale was
+    characterized by ARMA(1, 1) model, AR(2) model, and MA(1) model.
+  }
+  \label{fig:pp_ss}
 \end{figure}
 
 Similar to Section~\ref{sec:dependence}, the copula approach is not a complete
@@ -645,27 +517,6 @@ In the case of MA(1) and ARMA(1, 1), the true dependence appears close enough
 to our assumption of AR(1) that the results are reasonable. AR(2) however
 appears to be just far enough from our assumption, showing a limitation of the
 procedure.
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\textwidth]{hist_gamma_gev_FD}
-  \caption{The Super Naive plots (left) are the histograms of p-values from the
-  standard KS test with fitted parameters. The Naive Parametric plots (middle)
-  are the histograms of p-values from implementing parametric bootstrap. The
-  Copula plots are the histograms of p-values from implementing parametric
-  bootstrap with copulas for dependence and correcting for fitted parameters.
-  The data is generated from $Gamma(3, 1)$ (left) and $GEV(0, .2, 1)$ (right)
-  with a correlation coefficient of $r = 0.5$. In each case, $1000$ replicate
-  tests were performed with sample size $n = 100$ and $B = 1000$ bootstrap
-  samples.}
-  \label{fig:hist_gamma_gev_FD}
-\end{figure}
-
-It is also possible to apply our procedure to other families of distributions.
-The data in Figure~\ref{fig:hist_gamma_gev_FD} is generated from the gamma and
-generalized extreme value distributions. The results are favorable and show that
-the procedure outlined as a remedy for fitted parameters and spatially dependent
-can be adapted for various families of distributions.
 
 
 \section{Conclusion}
@@ -690,6 +541,38 @@ However, in cases such as AR(2), if the approximation is too far from the true
 dependence structure the approach does not completely remedy the issue. As well,
 tests were only performed with the normal copula. It is possible that other
 copulas could provide stronger results based on the true dependence of the data.
+
+\appendix
+
+\section{Nonparametric Bootstrap for KS Test with Fitted Parameters}
+
+Using the same notations in the text, the procedure is summarized as follows
+\citep{babu2004goodness}.
+\begin{enumerate}
+\item
+  Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
+  with replacement
+\item
+  Fit $F_\theta$ to $X_1^*,...,X_n^*$ and obtain estimate 
+	$\hat\theta_n^*$ of $\theta$.
+\item
+  Obtain the empirical distribution function $F_n^*$ of
+  $X_1^*, \ldots,  X_n^*$. 
+\item
+  Calculate bootstrap KS statistic
+  \[
+    D_n^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n^*}(x)\right) - B_n(x) |.
+  \]
+  where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
+  bias term \citep{babu2004goodness}.
+\item
+  Repeat the previous steps a large number $B$ times and use the empirical
+  distribution of $D_n^*$ to approximate the null distribution of the observed
+  statistic. 
+\end{enumerate}
+The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
+statistics that are greater than or equal to~$D_n$. Note that the step~1 and
+step~4 are different from the parametric bootstrap version.
 
 \bibliographystyle{asa}
 \bibliography{citations}
