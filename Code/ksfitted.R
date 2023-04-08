@@ -13,7 +13,7 @@
 ##' @return A function with a single argument while other parameters specified
 ##' through the input `param`.
 ##' 
-fitteddist <- function(dist, param, fn) {
+getfndist <- function(dist, param, fn) {
     nm <- names(param); l <- length(param)
     fun <- get(paste0(fn, dist))
     f <- formals(fun)
@@ -50,9 +50,9 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
     ddist <- get(paste0("d", dist))
     if (fit)
         param  <- MASS::fitdistr(x, ddist, start = split(param, names(param)))$estimate
-    pdist <- fitteddist(dist, param, "p")
-    rdist <- fitteddist(dist, param, "r")
-    qdist <- fitteddist(dist, param, "q")
+    pdist <- getfndist(dist, param, "p")
+    rdist <- getfndist(dist, param, "r")
+    qdist <- getfndist(dist, param, "q")
     working <- list(ar = numeric(0), ma = numeric(0))
     ## working, sigma, qdist are only used when serial == TRUE
     if (serial) {
@@ -61,10 +61,11 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
         ## working arma model to preserve serial dependence
         working <- list(ar = fit.arma$model$phi, ma = fit.arma$model$theta)
         sigma <- sqrt(tacvfARMA.my(phi = working$ar, theta = - working$ma, maxLag = 0))     
-        qdist <- fitteddist(dist, param, "q")
+        qdist <- getfndist(dist, param, "q")
     }
     ## get observed ks-stat
-    stat <- ks.test(x, pdist)$statistic
+    ks <- ks.test(x, pdist)
+    stat <- ks$statistic
     stat.b <- double(B)
     n <- length(x)
     ## bootstrapping
@@ -74,10 +75,10 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
         else x.b <- rdist(n)
         if (fit) {
             fitted.b <- MASS::fitdistr(x.b, ddist, start = split(param, names(param)))
-            pdist.b <- fitteddist(dist, fitted.b$estimate, "p")
+            pdist.b <- getfndist(dist, fitted.b$estimate, "p")
             stat.b[i] <- ks.test(x.b, pdist.b)$statistic
         } else stat.b[i] <- ks.test(x.b, pdist)$statistic
     }
     p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-    list(stat = stat, p.value = p.value, stat.b = stat.b)
+    list(stat = stat, p.value = p.value, stat.b = stat.b, p.naive = ks$p.value)
 }
