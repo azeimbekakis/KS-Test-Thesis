@@ -38,7 +38,9 @@ gg.ss <- ggplot(data = subset(ss.data, meth == "bootstrap"),
 ggsave(filename = "pp_ss.pdf", plot = gg.ss, path = "../Manuscript", height = 3, width = 6)
 
 ## Section 4: fitted parameter and serial dependence
-gg.ssf <- ggplot(data = subset(ss.data, meth == "bootstrap"),
+
+ssf.data$meth <- gl(3, nrep, nrep * 18, c("naive0", "naive", "bootstrap"))
+gg.ssf <- ggplot(data = subset(ssf.data, meth == "bootstrap"),
                  mapping = aes(sample = p)) +
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
@@ -48,3 +50,23 @@ gg.ssf <- ggplot(data = subset(ss.data, meth == "bootstrap"),
     coord_fixed() # theme(aspect.ratio=1)
 
 ggsave(filename = "pp_ssf.pdf", plot = gg.ssf, path = "../Manuscript", height = 3, width = 6)
+
+gg.s_f <- ggplot(data = subset(ssf.data, meth == "naive"),
+                 mapping = aes(sample = p)) +
+    stat_pp_band(distribution = "unif") +
+    stat_pp_line() +
+    stat_pp_point(distribution = "unif", cex = .3) +
+    facet_grid(vars(dist), vars(dep)) +
+    labs(x = "Probability Points", y = "Cumulative Probability") +
+    coord_fixed() # theme(aspect.ratio=1)
+
+gg.s__ <- ggplot(data = subset(ssf.data, meth == "naive0"),
+                 mapping = aes(sample = p)) +
+    stat_pp_band(distribution = "unif") +
+    stat_pp_line() +
+    stat_pp_point(distribution = "unif", cex = .3) +
+    facet_grid(vars(dist), vars(dep)) +
+    labs(x = "Probability Points", y = "Cumulative Probability") +
+    coord_fixed() # theme(aspect.ratio=1)
+
+ggsave(filename = "pp_s_.pdf", plot = gg.s__, path = "../Manuscript", height = 3, width = 6)

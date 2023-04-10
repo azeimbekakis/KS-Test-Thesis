@@ -80,12 +80,12 @@ do1rep <- function(n, phi, theta, dist, param) {
 }
 
 n.arma <- t(replicate(nrep, do1rep(n, .5, .3, "norm", n.par)))
-n.ar   <- t(replicate(nrep, do1rep(n, c(-.5, .3), numeric(0), "norm", n.par)))
-n.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .5, "norm", n.par)))
+n.ar   <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), "norm", n.par)))
+n.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
 
 g.arma <- t(replicate(nrep, do1rep(n, .5, .3, "gamma", g.par)))
-g.ar   <- t(replicate(nrep, do1rep(n, c(-.5, .3), numeric(0), "gamma", g.par)))
-g.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .5, "gamma", g.par)))
+g.ar   <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), "gamma", g.par)))
+g.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .8, "gamma", g.par)))
 
 ss.data <- data.frame(p = c(n.arma, n.ar, n.ma, g.arma, g.ar, g.ma),
                       dist = gl(2, nrep * 6, nrep * 12, c("normal", "gamma")),
@@ -99,22 +99,22 @@ do1rep <- function(n, phi, theta, dist, param) {
     rdist <- getfndist(dist, param, "r")
     qdist <- getfndist(dist, param, "q")
     x <- genData(n, phi, theta, qdist)
-    ks.f <- ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param)
-    ks.fs <- ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param)
+    ks.f <- ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param)
+    ks.fs <- ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param)
     c(ks.f$p.naive, ks.f$p.value, ks.fs$p.value)
 }
 
 n.arma <- t(replicate(nrep, do1rep(n, .5, .3, "norm", n.par)))
-n.ar   <- t(replicate(nrep, do1rep(n, c(-.5, .3), numeric(0), "norm", n.par)))
-n.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .5, "norm", n.par)))
+n.ar   <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), "norm", n.par)))
+n.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
 
 g.arma <- t(replicate(nrep, do1rep(n, .5, .3, "gamma", g.par)))
-g.ar   <- t(replicate(nrep, do1rep(n, c(-.5, .3), numeric(0), "gamma", g.par)))
-g.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .5, "gamma", g.par)))
+g.ar   <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), "gamma", g.par)))
+g.ma   <- t(replicate(nrep, do1rep(n, numeric(0), .8, "gamma", g.par)))
 
 ssf.data <- data.frame(p = c(n.arma, n.ar, n.ma, g.arma, g.ar, g.ma),
                        dist = gl(2, nrep * 9, nrep * 18, c("normal", "gamma")),
-                       meth = gl(2, nrep, nrep * 18, c("naive", "bootstrap")),
+                       meth = gl(3, nrep, nrep * 18, c("naive0", "naive", "bootstrap")),
                        dep = gl(3, nrep * 3, nrep * 18, c("ARMA(1, 1)", "AR(2)", "MA(1)")))
 
 save(f.data, s.data, ss.data, ssf.data, file = "sim.rda")
