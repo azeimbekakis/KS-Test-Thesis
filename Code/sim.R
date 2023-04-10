@@ -5,7 +5,7 @@ source("tacvfARMA.R")
 source("ksfitted.R")
 
 n <- 200
-nrep <- 10
+nrep <- 1000
 
 ### Section 2: fitted distribution
 
