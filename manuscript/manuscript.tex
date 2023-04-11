@@ -268,7 +268,7 @@ from the parametric bootstrap and, hence, are omitted.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{hist_fitted}
+  \includegraphics[width=.5\textwidth]{pp_f.pdf}
   \caption{PP-plot for the p-values obtained from KS tests with unspecified
     parameters with sample size $n = 200$ based on 1000 replicats. The data
     generating models were $N(8, 8)$ and $\Gamma(8, 1)$.
@@ -311,7 +311,7 @@ coefficient $\psi \in \{-0.3, 0.2, 0.1, 0, 0.1, 0.2, 0.3\}$, we generated 1000
 series of length 100. For each series, we applied the KS statistic
 in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(0, 1)$
 marginally. The histograms of the p-values from $1000$ replicates for all the
-$\psi$ values are displayed in Figure~\ref{fig:hist_correlation}. When
+$\psi$ values are displayed in Figure~\ref{fig:pp_s}. When
 $\phi \ne 0$, the histograms do not look likely to be generated from a standard
 uniform distribution. Positive $\psi$ values led to p-values with a distribution
 function higher than the standard uniform distribution function and, hence,
@@ -322,7 +322,7 @@ $\psi$, the bigger the deviation from the desired level.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{hist_correlation}
+  \includegraphics[width=\textwidth]{pp_s.pdf}
   \caption{PP-plots for the p-values obtained from KS test with serial
     dependence discarded and sample size $n = 200$ based on 1000
     replicates. The data have marginal distributions $N(8, 8)$ and
@@ -421,7 +421,7 @@ be useful for practical purposes.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{hist_correlation}
+  \includegraphics[width=.75\textwidth]{pp_ss.pdf}
   \caption{PP-plots for the p-values obtained from KS test with serial
     dependence accounted for through a working ARMA model and $n = 200$ based on
     1000 replicates. The data have marginal distributions $N(8, 8)$ and
@@ -491,15 +491,16 @@ place of the known~$F$.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{hist_correlation}
-  \caption{PP-plots for the p-values obtained from KS test with unspecified
-    parameters and serial
-    dependence accounted for through a working ARMA model and $n = 200$ based on
+  \includegraphics[width=.75\textwidth]{pp_s_f.pdf}
+  \includegraphics[width=.75\textwidth]{pp_ssf.pdf}
+  \caption{PP-plots for the p-values obtained from KS test without and with
+    serial dependence accounted for and unspecified parameters and sample size
+    $n = 200$ based on
     1000 replicates. The data have marginal distributions $N(8, 8)$ and
     $\Gamma(8, 1)$. The dependence structure on the standard normal scale was
     characterized by ARMA(1, 1) model, AR(2) model, and MA(1) model.
   }
-  \label{fig:pp_ss}
+  \label{fig:pp_ssf}
 \end{figure}
 
 Similar to Section~\ref{sec:dependence}, the copula approach is not a complete
@@ -507,7 +508,7 @@ solution. Regardless of the true dependence in the data we assume an AR(1)
 dependence structure by taking the lag-1 sample auto-spearman rho. However, we
 can show that as long as the AR(1) assumption is a close approximation, the
 correction still provides a reasonable approximation that can be useful for
-practical purposes. Figure~\ref{fig:hist_ma1_arma_ar2_FD} shows the results of the
+practical purposes. Figure~\ref{fig:ssd} shows the results of the
 procedure performed on data generated with dependence structures of  MA(1),
 ARMA(1, 1), and AR(2). Naively fitting parameters and not adjusting for
 dependence clearly deviates from a uniform distribution of p-values. Parametric
