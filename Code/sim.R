@@ -37,8 +37,6 @@ save(f.data, file = "f.rda")
 
 genData <- function(n, phi, theta, qdist) {
     x <- arima.sim(model = list(ar = phi, ma = theta), n = n)
-    ## xbig <- arima.sim(model = list(ar = phi, ma = theta), n = 100000)
-    ## sigma <- sd(xbig)
     sigma <- sqrt(tacvfARMA.my(phi = phi, theta = - theta, maxLag = 0))
     qdist(pnorm(x, sd = sigma))
 }
@@ -72,7 +70,6 @@ s.data <- data.frame(p = c(n.s.n3, n.s.n1, n.s.1, n.s.3,
 ### Section 3: after fixing the serial dependence with auto.arima
 
 do1rep <- function(n, phi, theta, dist, param) {
-    rdist <- getfndist(dist, param, "r")
     qdist <- getfndist(dist, param, "q")
     x <- genData(n, phi, theta, qdist)
     ks <- ks.test.fitted(x, dist, fit = FALSE, serial = TRUE, param = param)
@@ -96,7 +93,6 @@ ss.data <- data.frame(p = c(n.arma, n.ar, n.ma, g.arma, g.ar, g.ma),
 
 
 do1rep <- function(n, phi, theta, dist, param) {
-    rdist <- getfndist(dist, param, "r")
     qdist <- getfndist(dist, param, "q")
     x <- genData(n, phi, theta, qdist)
     ks.f <- ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param)
