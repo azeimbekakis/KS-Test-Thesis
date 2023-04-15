@@ -24,12 +24,12 @@ do1rep <- function(n, phi, theta, qdist, hypod, start) {
 ## true distribution is truncated normal(8, 8)
 qdist <- function(p) qtrunc(p, "norm", a = 0, mean = 8, sd = sqrt(8))
 
-hg.n3 <- t(replicate(nrep, do1rep(n, -0.3, numeric(0), qdist, "gamma", g.par)))
-hg.0 <- t(replicate(nrep, do1rep(n, numeric(0), numeric(0), qdist, "gamma", g.par)))
-hg.3 <- t(replicate(nrep, do1rep(n, 0.3, numeric(0), qdist, "gamma", g.par)))
+hg.arma <- t(replicate(nrep, do1rep(n, 0.5, 0.3, qdist, "gamma", g.par)))
+hg.ar <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), qdist, "gamma", g.par)))
+hg.ma <- t(replicate(nrep, do1rep(n, numeric(0), 0.8, qdist, "gamma", g.par)))
                     
         
-hg.data <- data.frame(p = c(hg.n3, hg.0, hg.3),
+hg.data <- data.frame(p = c(hg.arma, hg.ar, hg.ma),
                       meth = gl(2, nrep, nrep * 6, c("not serial", "serial")),
                       dep = gl(3, nrep * 2, nrep * 6, c(-0.3, 0, 0.3)))
 
@@ -37,13 +37,13 @@ hg.data <- data.frame(p = c(hg.n3, hg.0, hg.3),
 ## true distribution is gamma(8, 1)
 qdist <- function(p) qgamma(p, shape = 8, rate = 1)
 
-hn.n3 <- t(replicate(nrep, do1rep(n, -0.3, numeric(0), qdist, "norm", n.par)))
-hn.0 <- t(replicate(nrep, do1rep(n, numeric(0), numeric(0), qdist, "norm", n.par)))
-hn.3 <- t(replicate(nrep, do1rep(n, 0.3, numeric(0), qdist, "norm", n.par)))
+hn.arma <- t(replicate(nrep, do1rep(n, 0.5, 0.3, qdist, "norm", n.par)))
+hn.ar <- t(replicate(nrep, do1rep(n, c(.6, .2), numeric(0), qdist, "norm", n.par)))
+hn.ma <- t(replicate(nrep, do1rep(n, numeric(0), 0.8, qdist, "norm", n.par)))
                     
         
-hn.data <- data.frame(p = c(hn.n3, hn.0, hn.3),
+hn.data <- data.frame(p = c(hn.arma, hn.ar, hn.ma),
                       meth = gl(2, nrep, nrep * 6, c("not serial", "serial")),
-                      dep = gl(3, nrep * 2, nrep * 6, c(-0.3, 0, 0.3)))
+                      dep = gl(3, nrep * 2, nrep * 6, c("ARMA", "AR", "MA")))
 
 save(hg.data, hn.data, file = "power.rda")
