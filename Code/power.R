@@ -16,9 +16,10 @@ genData <- function(n, phi, theta, qdist) {
 
 do1rep <- function(n, phi, theta, qdist, hypod, start) {
     x <- genData(n, phi, theta, qdist)
-    ks.f <- ks.test.fitted(x, hypod, fit = TRUE, serial = FALSE, param = start)
-    ks.fs <- ks.test.fitted(x, hypod, fit = TRUE, serial = TRUE, param = start)
-    c(ks.f$p.value, ks.fs$p.value)
+    ks.f <- try(ks.test.fitted(x, hypod, fit = TRUE, serial = FALSE, param = start))
+    ks.fs <- try(ks.test.fitted(x, hypod, fit = TRUE, serial = TRUE, param = start))
+    c(ifelse(inherits(ks.f, "try-error"), NA, ks.f$p.value),
+      ifelse(inherits(ks.fs, "try-error"), NA, ks.fs$p.value))
 }
 
 ## true distribution is truncated normal(8, 8)
