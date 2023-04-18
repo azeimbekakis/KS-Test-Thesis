@@ -520,6 +520,46 @@ appears to be just far enough from our assumption, showing a limitation of the
 procedure.
 
 
+\begin{table}[ht]
+  \label{tab:power}
+  \caption{Power of rejecting the null hypothesis of normal and gamma
+    distribution at significance level 0.05 when the true distribution was
+    $\Gamma(8, 1)$ and $N(8, 8)$, respectively. }
+\centering
+\begin{tabular}{llrrrr}
+  \toprule
+  &  & \multicolumn{2}{c}{$H_0:$ normal} &
+  \multicolumn{2}{c}{$H_0$: gamma}\\
+  \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+  Dependence & Method & $n = 100$ & $n = 200$ & $n = 100$ & $n = 200$\\
+  \midrule
+ARMA & naive & 0.40 & 0.66 & 0.52 & 0.78 \\ 
+   & copula & 0.33 & 0.56 & 0.44 & 0.72 \\ 
+  AR & naive & 0.41 & 0.66 & 0.46 & 0.70 \\ 
+   & copula & 0.26 & 0.45 & 0.31 & 0.54 \\ 
+  MA & naive & 0.37 & 0.73 & 0.51 & 0.82 \\ 
+   & copula & 0.34 & 0.69 & 0.49 & 0.80 \\ 
+   \bottomrule
+\end{tabular}
+\end{table}
+
+Finally, we report a small study of the power of the one-sample KS test with
+unspecified parameters and serially dependent data. Using the three dependence
+models characterized by ARMA(1, 1), AR(2), and MA(1), we generated serially
+dependent data with marginal distributions $N(8, 8)$ left truncated by zero and
+$\Gamma(8, 1)$. Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
+data has marginally a normal distribution; for data from $N(8, 8)$ left
+truncated by zero, we tested $H_0$ that the data has marginally a gamma
+distribution;  In both cases, no parameters were specified. Two sample sizes
+were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
+power of rejecting the null hypothesis at significance level~0.05. The tests
+based on a working copula have substantial power in rejecting the null
+hypothesis and the power increases as sample size increases. The power from the
+naive tests where the serial dependence is discarded, although the unspecified
+parameters are accounted for, appear to have higher power than the proposed
+tests, but this is not reliable since they do not hold their sizes as
+demonstrated in the Figures. 
+
 \section{Conclusion}
 \label{sec:conclusion}
 

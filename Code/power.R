@@ -32,7 +32,7 @@ hg.ma <- t(replicate(nrep, do1rep(n, numeric(0), 0.8, qdist, "gamma", g.par)))
         
 hg.data <- data.frame(p = c(hg.arma, hg.ar, hg.ma),
                       meth = gl(2, nrep, nrep * 6, c("not serial", "serial")),
-                      dep = gl(3, nrep * 2, nrep * 6, c(-0.3, 0, 0.3)))
+                      dep = gl(3, nrep * 2, nrep * 6, c("ARMA", "AR", "MA")))
 
 
 ## true distribution is gamma(8, 1)
