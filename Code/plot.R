@@ -8,7 +8,7 @@ gg.f <- ggplot(data = f.data, mapping = aes(sample = p)) +
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(meth)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
@@ -22,7 +22,7 @@ gg.s <- ggplot(data = s.data, mapping = aes(sample = p)) +
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(rho)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
@@ -36,7 +36,7 @@ gg.ss <- ggplot(data = subset(ss.data, meth == "bootstrap"),
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(dep)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
@@ -51,7 +51,7 @@ gg.ssf <- ggplot(data = subset(ssf.data, meth == "bootstrap"),
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(dep)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
@@ -64,7 +64,7 @@ gg.s_f <- ggplot(data = subset(ssf.data, meth == "naive"),
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(dep)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
@@ -77,7 +77,7 @@ gg.s__ <- ggplot(data = subset(ssf.data, meth == "naive0"),
     scale_y_continuous(breaks=c(0, 1)) + 
     stat_pp_band(distribution = "unif") +
     stat_pp_line() +
-    stat_pp_point(distribution = "unif", cex = .3) +
+    stat_pp_point(distribution = "unif", cex = .1) +
     facet_grid(vars(dist), vars(dep)) +
     labs(x = "Probability Points", y = "Cumulative Probability") +
     coord_fixed() # theme(aspect.ratio=1)
