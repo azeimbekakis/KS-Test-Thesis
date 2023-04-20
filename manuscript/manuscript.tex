@@ -219,15 +219,15 @@ The consequence of using the wrong null distribution for the KS statistic $D_n$
 in~\eqref{eq:ks_fitted} can be illustrated through a simple simulation study. A
 random sample $X_1, \ldots, X_n$ was generated from a normal
 distribution with both mean and variance parameters set equal to 8 ($N(8,8)$), 
-and sample size $n = 200$. The sample mean and sample standard
-deviation were used as $\hat\theta_n$. The p-value of the test
-statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
-\texttt{ks.test()} function in~R with the fitted normal distribution as the
+and sample size $n = 200$. The maximum likelihood estimates of the mean and 
+variance were used as $\hat\theta_n$. The p-value of the test
+statistic~$D_n$ in Equation~\eqref{eq:ks_fitted} was obtained by naively calling 
+the \texttt{ks.test()} function in~R with the fitted normal distribution as the
 hypothesized distribution. That is, the hypothesized distribution was
 $N(\bar X, s^2)$ where $\bar X$ is the sample mean and $s^2$ is the sample
-variance. This experiment was repeated 1000 times and the 
-probability-probability plot (PP-plot) of the 1000 p-values are displayed in the 
-top left plot of Figure~\ref{fig:pp_f}. If the test were
+variance (with $n$ in the denominator). This experiment was repeated 1000 times
+and the probability-probability plot (PP-plot) of the 1000 p-values are 
+displayed in the top left plot of Figure~\ref{fig:pp_f}. If the test were
 valid, the p-values would be uniformly distributed in the unit
 interval and the points in the PP plot would fall along the diagonal line. 
 Clearly, the distribution of the 1000 p-values are very different from what
@@ -241,8 +241,8 @@ were selected so that mean and variance of the normal and gamma distributions
 in the simulations are the same. Likewise, the p-value of the test 
 statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
 \texttt{ks.test()} function in~R with the fitted gamma distribution as the
-hypothesized distribution using the shape and scale \eds{maximum likelihood 
-estimates}. The PP plot of the p-values from 1000 replications of this 
+hypothesized distribution using the shape and scale maximum likelihood 
+estimates. The PP plot of the p-values from 1000 replications of this 
 experiment are displayed in the bottom left plot of Figure~\ref{fig:pp_f}. The
 p-values are again non-uniformly distributed due to the use of the 
 estimated parameters when specifying the null distribution.
@@ -310,7 +310,7 @@ contains no unknown parameters. That is,
 \[
 H_0: \text{$X_i$'s have marginal distribution $F$.}
 \]
-The KS statistic $D_n$ in~\eqref{eq:ks_standard}
+The KS statistic $D_n$ in Equation~\eqref{eq:ks_standard}
 is still a good measure of deviation from the null hypothesis. Nonetheless, the
 null distribution of $F_n$ changes when there is serial dependence.
 When the serial dependence is
@@ -324,26 +324,27 @@ is negative, in which case, the test is conservative.
 The invalidity of the standard statistic for serially dependent data can be
 illustrated by a simple simulation study. Consider a first-order autoregressive
 or AR(1) model with marginal normal (or gamma) distribution. For each AR
-coefficient $\psi \in \{-0.3, 0.1, 0.1, 0.3\}$, we generated 1000
-series of length 100. For each series, we applied the KS statistic
+coefficient $\psi \in \{-0.3, -0.1, 0.1, 0.3\}$, we generated 1000
+series of length 200. For each series, we applied the KS statistic
 in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(8, 8)$ (or 
-$\Gamma(8,1)$ marginally. The PP-plots of the p-values from $1000$ replicates 
-for all the $\psi$ values are displayed in Figure~\ref{fig:pp_s}. When
-$\phi$ diverges from 0, the p-values do not look likely to be generated from a 
+$\Gamma(8,1)$) marginally. The PP-plots of the p-values from $1000$ replicates 
+for all the $\psi$ values are displayed in Figure~\ref{fig:pp_s}. As 
+$\phi$ diverges from 0, the p-values look less likely to be generated from a 
 standard uniform distributions. Positive $\psi$ values led to p-values with a 
 distribution function higher than the standard uniform distribution function and, 
 hence, conservative tests. Negative $\psi$ values led to p-values with a 
-distributionfunction lower than the standard uniform distribution and, hence, 
-liberal tests. \eds{check previous statement, not consistent with beginning of 
-this section} The larger the magnitude of
-$\psi$, the bigger the deviation from the desired level.
-\eds{check that $\psi=.1$ plots are really from .1 and not 0}
+distribution function lower than the standard uniform distribution and, hence, 
+liberal tests. \eds{the previous two sentences are not consistent with what is 
+written at the beginning of this section. If I am interpreting the plots 
+correctly, then positive $\psi$ leads to p-values that are too low which would
+correspond to liberal tests (consistent with what was written at the beginning 
+of this section).} 
 
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{pp_s.pdf}
   \caption{PP-plots for the p-values obtained from KS test with serial
-    dependence discarded and sample size $n = 200$ based on 1000
+    dependence ignored and sample size $n = 200$ based on 1000
     replicates. The data have marginal distributions $N(8, 8)$ and
     $\Gamma(8, 1)$, with an AR(1) dependence structure on the standard normal
     scale. The AR coefficients were $\psi \in \{-0.3, -0.1,  0.1,  0.3\}$.
@@ -401,9 +402,8 @@ The semiparametric bootstrap procedure is as follows.
 \begin{enumerate}
 \item
   Generate $Z_1^*, \ldots, Z_n^*$ from the fitted ARMA$(p, q)$ process with
-  innovation \eds{? inverse?} variance $1 / \sigma^2$ such that the $Z_i$'s are
-	marginally \jy{yes, it means the innovation series of an ARMA process.}
-  standard normal variables.
+  innovation variance $1 / \sigma^2$ such that the $Z_i$'s are
+	marginally standard normal variables.
 \item
   Form a bootstrap sample $X_i^* = F^{-1} [\Phi(Z_i^*)]$,  $i = 1, \ldots, n$,
   where $F^{-1}$ is the quantile function of $F$.
@@ -435,9 +435,19 @@ the true dependence is not covered by the ARMA model, the working model may
 still give a reasonable approximation that can
 be useful for practical purposes. 
 
-
-\jy{describe the simulation setting here.}
-
+The semiparametric bootstrap procedure was evaluated in simulation. We 
+considered three true dependence structures on the standard normal scale 
+(ARMA(1, 1), AR(2), and MA(1)) and two marginal distributions 
+($N(8,8)$ and $\Gamma(8,1)$).  For each dependence structure and marginal distribution combination, we generated 1000 series of length 200.  For each series, we applied the semiparametric bootstrap procedure with serial
+dependence accounted for through a working ARMA model to test $H_0$ that the 
+$X_i$'s marginally follow their true marginal distribution ($N(8, 8)$ or 
+$\Gamma(8,1)$). Figure~\ref{fig:pp_ss} displays the PP-plots of the 1000 
+p-values for each dependence structure and marginal distribution combination.
+All plots within the figure show the points falling along the diagonal lines, 
+implying that the p-values are coming from standard uniform distributions and 
+that the semiparametric bootstrap procedure is an effective remedy in all cases
+considered. 
+		
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=.75\textwidth]{pp_ss.pdf}
@@ -487,7 +497,7 @@ variance. Our semiparametric bootstrap procedure is as follows.
   $X_i^* = F_{\hat\theta_n}^{-1} [\Phi(Z_i^*)]$, $i = 1, \ldots, n$, where
   $F_{\hat\theta_n}^{-1}$ is the quantile function of $F_{\hat\theta_n}$.
 \item
-  Fir $F_\theta$ to $X_1^*, \ldots, X_n^*$ to obtain estimate $\hat\theta_n^*$
+  Fit $F_\theta$ to $X_1^*, \ldots, X_n^*$ to obtain estimate $\hat\theta_n^*$
   of $\theta$.
 \item
   Obtain the empirical distribution function $F_n^*$ of the bootstrap sample
@@ -512,7 +522,8 @@ place of the known~$F$.
   \centering
   \includegraphics[width=.75\textwidth]{pp_s_f.pdf}
   \includegraphics[width=.75\textwidth]{pp_ssf.pdf}
-  \caption{PP-plots for the p-values obtained from KS test without and with
+  \caption{PP-plots for the p-values obtained from KS test without (top) and 
+	  with (bottom)
     serial dependence accounted for and unspecified parameters and sample size
     $n = 200$ based on
     1000 replicates. The data have marginal distributions $N(8, 8)$ and
@@ -527,16 +538,19 @@ solution. Regardless of the true dependence in the data we assume an AR(1)
 dependence structure by taking the lag-1 sample auto-spearman rho. However, we
 can show that as long as the AR(1) assumption is a close approximation, the
 correction still provides a reasonable approximation that can be useful for
-practical purposes. Figure~\ref{fig:ssd} shows the results of the
-procedure performed on data generated with dependence structures of  MA(1),
-ARMA(1, 1), and AR(2). Naively fitting parameters and not adjusting for
-dependence clearly deviates from a uniform distribution of p-values. Parametric
-bootstrap provides some correction but does not account for dependence, so
-therefore the results of the copula remedy are more accurate and favorable.
+practical purposes. Figure~\ref{fig:pp_ssf} shows the results of the
+procedure performed on data generated with dependence structures of ARMA(1, 1),
+AR(2), and MA(1). Naively fitting parameters and not adjusting for dependence  clearly deviates from a uniform distribution of p-values. 
+Parametric bootstrap provides some correction but does not account for 
+dependence, 
+\eds{just want to verify: you are using parametric bootstrap from Section 2 for
+the top portion of Figure~\ref{fig:pp_ssf}? (Not the totally naive procedure 
+that ignores both issues)} 
+so therefore the results of the copula remedy are more accurate and favorable.
 In the case of MA(1) and ARMA(1, 1), the true dependence appears close enough
 to our assumption of AR(1) that the results are reasonable. AR(2) however
 appears to be just far enough from our assumption, showing a limitation of the
-procedure.
+procedure. \eds{I don't think AR(2) looks that bad?}
 
 
 \begin{table}[ht]
@@ -574,10 +588,12 @@ were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
 power of rejecting the null hypothesis at significance level~0.05. The tests
 based on a working copula have substantial power in rejecting the null
 hypothesis and the power increases as sample size increases. The power from the
-naive tests where the serial dependence is discarded, although the unspecified
-parameters are accounted for, appear to have higher power than the proposed
-tests, but this is not reliable since they do not hold their sizes as
-demonstrated in the Figures. 
+naive tests where the serial dependence is ignored, although the unspecified
+parameters are accounted for \eds{i.e., procedure from Section 2?  It may be 
+less confusing if we had a name for the procedure discussed in each section 
+rather than using ``naive'' to describe both levels of ignorance?}, appear to 
+have higher power than the proposed tests, but this is not reliable since they 
+do not hold their sizes as demonstrated in the Figures. 
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -587,20 +603,26 @@ completely specified and the data is independent. When these assumptions are
 violated, the test is no longer accurate and remedies must be performed. In the
 case of fitted parameters, parametric and non-parametric bootstrap can restore
 the size of the test. A bias correction is required if the non-parametric form
-is used \citep{babu2004goodness}. In the case of \eds{serially} dependent data, a procedure
-using bootstrap
-with copulas to model dependency shows positive results. When both assumptions
-are violated, i.e., where the data has \eds{serial} dependence and parameters
-must
-be fitted, an adjusted copula procedure also shows positive results. The tests
-appear effective for a variety of families of distributions. The copula remedy
-is not a complete solution and has limitations. Regardless of the true
-dependence, we assume an AR(1) dependence structure. Therefore, if the AR(1)
-dependence structure is a close approximation of the truth, the approach can work.
-However, in cases such as AR(2), if the approximation is too far from the true
-dependence structure the approach does not completely remedy the issue. As well,
-tests were only performed with the normal copula. It is possible that other
-copulas could provide stronger results based on the true dependence of the data.
+is used \citep{babu2004goodness}. In the case of serially dependent data, 
+a procedure using bootstrap with copulas to model dependency shows positive
+results. When both assumptions are violated, i.e., where the data has serial 
+dependence and parameters must be fitted, an adjusted copula procedure also 
+shows positive results. The tests appear effective for a variety of families of 
+distributions. The copula remedy is not a complete solution and has limitations. 
+Regardless of the true dependence, we assume an ARMA(p,q) dependence structure 
+in the procedure in Section~\ref{sec:dependence} and an AR(1) dependence 
+structure in the procedure in Section~\ref{sec:fittedwithdependence}. 
+%Therefore, if the AR(1) dependence structure is a 
+%close approximation of the truth, the approach can work.
+%However, in cases such as AR(2) \eds{I still do not think AR(2) looks bad!}, if 
+%the approximation is too far from the true
+%dependence structure the approach does not completely remedy the issue.
+Therefore, if the assumed dependence structure is a close approximation of the
+truth, the approach can work. However, if the approximation is too far from the 
+true dependence structure the approach does not completely remedy the issue. 
+As well, tests were only performed with the normal copula. It is possible that 
+other copulas could provide stronger results based on the true dependence of the 
+data.
 
 \appendix
 
