@@ -185,7 +185,8 @@ issue. Section~\ref{sec:dependence} investigates the scenario where the data of
 the empirical distribution are serially dependent. A bootstrap procedure
 employing a working ARMA model to account for dependence is proposed as a
 working solution. Section~\ref{sec:fittedwithdependence}
-explores the case where a combination of the first two scenarios occurs.
+explores the case where a combination of the first two scenarios occurs. An  
+adjusted bootstrap procedure is proposed as a working solution in this case.  
 Section~\ref{sec:conclusion} concludes with a discussion.
 
 \section{Unspecified Parameters}
@@ -533,12 +534,7 @@ place of the known~$F$.
   \label{fig:pp_ssf}
 \end{figure}
 
-Similar to Section~\ref{sec:dependence}, the copula approach is not a complete
-solution. Regardless of the true dependence in the data we assume an AR(1)
-dependence structure by taking the lag-1 sample auto-spearman rho. However, we
-can show that as long as the AR(1) assumption is a close approximation, the
-correction still provides a reasonable approximation that can be useful for
-practical purposes. Figure~\ref{fig:pp_ssf} shows the results of the
+Figure~\ref{fig:pp_ssf} shows the results of the
 procedure performed on data generated with dependence structures of ARMA(1, 1),
 AR(2), and MA(1). Naively fitting parameters and not adjusting for dependence  clearly deviates from a uniform distribution of p-values. 
 Parametric bootstrap provides some correction but does not account for 
@@ -547,11 +543,21 @@ dependence,
 the top portion of Figure~\ref{fig:pp_ssf}? (Not the totally naive procedure 
 that ignores both issues)} 
 so therefore the results of the copula remedy are more accurate and favorable.
-In the case of MA(1) and ARMA(1, 1), the true dependence appears close enough
-to our assumption of AR(1) that the results are reasonable. AR(2) however
-appears to be just far enough from our assumption, showing a limitation of the
-procedure. \eds{I don't think AR(2) looks that bad?}
+%In the case of MA(1) and ARMA(1, 1), the true dependence appears close enough
+%to our assumption of AR(1) that the results are reasonable. AR(2) however
+%appears to be just far enough from our assumption, showing a limitation of the
+%procedure. 
 
+Similar to Section~\ref{sec:dependence}, the copula approach is not a complete
+solution. Regardless of the true dependence in the data we assume an ARMA$(p,q)$
+dependence structure. As long as this assumption is a close approximation, the
+correction should still provide a reasonable approximation that can be useful 
+for practical purposes. 
+%Regardless of the true dependence in the data we assume an AR(1)
+%dependence structure by taking the lag-1 sample auto-spearman rho. However, we
+%can show that as long as the AR(1) assumption is a close approximation, the
+%correction still provides a reasonable approximation that can be useful for
+%practical purposes. 
 
 \begin{table}[ht]
   \label{tab:power}
@@ -609,12 +615,10 @@ results. When both assumptions are violated, i.e., where the data has serial
 dependence and parameters must be fitted, an adjusted copula procedure also 
 shows positive results. The tests appear effective for a variety of families of 
 distributions. The copula remedy is not a complete solution and has limitations. 
-Regardless of the true dependence, we assume an ARMA(p,q) dependence structure 
-in the procedure in Section~\ref{sec:dependence} and an AR(1) dependence 
-structure in the procedure in Section~\ref{sec:fittedwithdependence}. 
+Regardless of the true dependence, we assume an ARMA($p,q$) dependence structure. 
 %Therefore, if the AR(1) dependence structure is a 
 %close approximation of the truth, the approach can work.
-%However, in cases such as AR(2) \eds{I still do not think AR(2) looks bad!}, if 
+%However, in cases such as AR(2), if 
 %the approximation is too far from the true
 %dependence structure the approach does not completely remedy the issue.
 Therefore, if the assumed dependence structure is a close approximation of the
