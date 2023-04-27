@@ -326,6 +326,8 @@ is negative, in which case, the test is conservative.
 
 
 \jy{how about removing the panels for $-0.1$ and 0.1?}
+\eds{seems like too few if those are removed. How about $\{-0.4,-0.2,0.2,0.4\}$
+or $\{-0.30,-0.15,0.15,0.30\}$? Is it easy/quick to generate the plots?} 
 
 \begin{figure}[tbp]
   \centering
@@ -350,16 +352,21 @@ $\Gamma(8,1)$) marginally. The PP-plots of the p-values from $1000$ replicates
 for all the $\psi$ values are displayed in Figure~\ref{fig:pp_s}. As 
 $\phi$ diverges from 0, the p-values look less likely to be generated from a 
 standard uniform distributions. Positive $\psi$ values led to p-values with a 
-distribution function higher than the standard uniform distribution function and, 
-hence, conservative tests. Negative $\psi$ values led to p-values with a 
-distribution function lower than the standard uniform distribution and, hence, 
-liberal tests. \eds{the previous two sentences are not consistent with what is 
+distribution function higher than the standard uniform distribution function as 
+there were more smaller p-values than expected, and 
+hence, %conservative 
+liberal tests. Negative $\psi$ values led to p-values with a 
+distribution function lower than the standard uniform distribution as there 
+were more larger p-values than expected, and hence, 
+%liberal 
+conservative tests. 
+\eds{the previous two sentences are not consistent with what is 
 written at the beginning of this section. If I am interpreting the plots 
 correctly, then positive $\psi$ leads to p-values that are too low which would
 correspond to liberal tests (consistent with what was written at the beginning 
 of this section).} \jy{Need to rephrase. A distribution function higher than
   another distribution means that it has more smaller values.}
-
+\eds{do the edits fix the problem?}
 
 A complete remedy for KS tests with serially dependent data is
 challenging. The null distribution depends on the structure of the serial
@@ -522,6 +529,7 @@ variance. Our semiparametric bootstrap procedure is as follows.
   \[
     D_n^* = \sup_x \lvert F_n^* (x) - F_{\hat\theta_n}^* (x) \rvert.
   \]
+	\eds{check placement of * in second F}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
@@ -530,7 +538,8 @@ variance. Our semiparametric bootstrap procedure is as follows.
 The p-value of $D_n$ is approximated by the proportion of the $D_n^*$
 statistics that are greater than or equal to~$D_n$. Compared to the algorithm in
 the last section, here we use $F_{\hat\theta_n}$ and $F_{\hat\theta_n}^*$ in
-place of the known~$F$.
+place of the known~$F$. \eds{check placement of * in second F}
+
 
 
 \begin{figure}[tbp]
@@ -552,15 +561,15 @@ Figure~\ref{fig:pp_ssf} shows the PP-plots resulting p-valuess of the
 procedure performed on data generated from same simulation settings as in
 Section~\ref{sec:dependence}. For comparison, we also displayed the PP-plot of
 a naive bootstrap procedure that adjusts for the unspecified parameters as in
-Section~\ref{sec:fitted} but not for the serial dependence. The p-values from
+Section~\ref{sec:fitted} but not for the serial dependence. 
+The super naive approach that does not adjust for fitted parameters nor serial
+dependence would have double sin, so the results are not reported. 
+The p-values from
 naively fitting parameters but not adjusting for dependence clearly deviates
 from the standard uniform distribution except in the MA(1) case.
 \jy{needs an explanation ...}
-The super naive approach that does not adjust for fitted parameters nor serial
-dependence would have double sin, so the results are not reported.
-\eds{just want to verify: you are using parametric bootstrap from Section 2 for
-the top portion of Figure~\ref{fig:pp_ssf}? (Not the totally naive procedure 
-that ignores both issues)} \jy{Yes}
+\eds{if we had used a different MA parameter other than 0.8, would we see  
+similar behavior?} 
 Similar to Section~\ref{sec:dependence}, the working normal copula approach
 gives p-values with the desired standard uniform distribution regardless of the
 true dependence.
@@ -593,7 +602,9 @@ Finally, we report a small study of the power of the one-sample KS test with
 unspecified parameters and serially dependent data. Using the three dependence
 models characterized by ARMA(1, 1), AR(2), and MA(1), we generated serially
 dependent data with marginal distributions $N(8, 8)$ left truncated by zero and
-$\Gamma(8, 1)$. Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
+$\Gamma(8, 1)$. 
+\eds{same AR and MA parameters as the previous section?}
+Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
 data has marginally a normal distribution; for data from $N(8, 8)$ left
 truncated by zero, we tested $H_0$ that the data has marginally a gamma
 distribution;  In both cases, no parameters were specified. Two sample sizes
@@ -602,9 +613,8 @@ power of rejecting the null hypothesis at significance level~0.05. The tests
 based on a working copula have substantial power in rejecting the null
 hypothesis and the power increases as sample size increases. The power from the
 naive tests where the serial dependence is ignored, although the unspecified
-parameters are accounted for \eds{i.e., procedure from Section 2?  It may be 
-less confusing if we had a name for the procedure discussed in each section 
-rather than using ``naive'' to describe both levels of ignorance?}, appear to 
+parameters are accounted for (i.e., procedure from 
+Section~\ref{sec:dependence}), appear to 
 have higher power than the proposed tests, but this is not reliable since they 
 do not hold their sizes as demonstrated in the Figures. 
 
