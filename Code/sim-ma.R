@@ -5,7 +5,7 @@ source("tacvfARMA.R")
 source("ksfitted.R")
 
 n <- 200
-nrep <- 1000
+nrep <- 2
 
 ### Section 2: fitted distribution
 
@@ -76,7 +76,9 @@ n.ma.4   <- t(replicate(nrep, do1rep(n, numeric(0), .4, "norm", n.par)))
 n.ma.n4   <- t(replicate(nrep, do1rep(n, numeric(0), -.4, "norm", n.par)))
 n.ma.n8   <- t(replicate(nrep, do1rep(n, numeric(0), -.8, "norm", n.par)))
 
-ss.data <-data.frame(p = c(n.ma.8, n.ma.4, n.ma.n4, n.ma.n8))
+ss.data <-data.frame(p = c(n.ma.8, n.ma.4, n.ma.n4, n.ma.n8),
+                     method = gl(2, nrep, nrep * 8, c("naive", "serial")),
+                     theta = gl(4, nrep * 2, nrep * 4, c(.8, .4, -.4, -.8)))
 
 ## Section 4: fitted parameter and serial dependence
 
@@ -85,14 +87,18 @@ do1rep <- function(n, phi, theta, dist, param) {
     x <- genData(n, phi, theta, qdist)
     ks.f <- try(ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param))
     ks.fs <- try(ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param))
-    c(ifelse(inherits(ks.f, "try-error"), c(NA, NA), c(ks.f$p.naive, ks.f$p.value)),
+    c(if(inherits(ks.f,  "try-error")) c(NA, NA) else c(ks.f$p.naive, ks.f$p.value),
       ifelse(inherits(ks.fs, "try-error"), NA, ks.fs$p.value))
 }
 
 n.8 <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
+n.4 <- t(replicate(nrep, do1rep(n, numeric(0), .4, "norm", n.par)))
+n.n4 <- t(replicate(nrep, do1rep(n, numeric(0), -.4, "norm", n.par)))
 n.n8 <- t(replicate(nrep, do1rep(n, numeric(0), -.8, "norm", n.par)))
 
 
-ssf.data <- data.frame(p = c(n.8, n.n8))
+ssf.data <- data.frame(p = c(n.8, n.4, n.n4, n.n8),
+                       method = gl(3, nrep, nrep * 12, c("naive1", "naive2", "proposed")),
+                       theta = gl(4, nrep * 3, nrep * 12, c(.8, .4, -.4, -.8)))
 
 save(s.data, ss.data, ssf.data, file = "sim-ma.rda")
