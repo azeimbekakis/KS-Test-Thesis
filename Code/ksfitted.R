@@ -70,8 +70,7 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
     n <- length(x)
     ## bootstrapping
     for (i in 1:B) {
-        x.b <- ifelse(serial,  qdist(pnorm(stats::arima.sim(working, n = n), sd = sigma)),
-                      rdist(n))
+        x.b <- if(serial) qdist(pnorm(stats::arima.sim(working, n = n), sd = sigma)) else rdist(n)
         if (fit) {
             fitted.b <- MASS::fitdistr(x.b, ddist, start = split(param, names(param)))
             pdist.b <- getfndist(dist, fitted.b$estimate, "p")

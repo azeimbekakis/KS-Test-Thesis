@@ -83,9 +83,10 @@ ss.data <-data.frame(p = c(n.ma.8, n.ma.4, n.ma.n4, n.ma.n8))
 do1rep <- function(n, phi, theta, dist, param) {
     qdist <- getfndist(dist, param, "q")
     x <- genData(n, phi, theta, qdist)
-    ks.f <- ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param)
-    ks.fs <- ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param)
-    c(ks.f$p.naive, ks.f$p.value, ks.fs$p.value)
+    ks.f <- try(ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param))
+    ks.fs <- try(ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param))
+    c(ifelse(inherits(ks.f, "try-error"), c(NA, NA), c(ks.f$p.naive, ks.f$p.value)),
+      ifelse(inherits(ks.fs, "try-error"), NA, ks.fs$p.value))
 }
 
 n.8 <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
