@@ -26,12 +26,6 @@ g.par <- c(shape = 8, rate = 1)
 # g.f <- t(replicate(nrep, do1rep(n, "gamma", g.par)))
 
 
-## f.data <- data.frame(p = c(n.f, g.f),
-##                      dist = gl(2, nrep * 2, nrep * 4, c("normal", "gamma")),
-##                      meth = gl(2, nrep, nrep * 4, c("naive", "bootstrap")))
-
-save(f.data, file = "f.rda")
-
 ### Section 3: serial dependence (but known distribution)
 
 genData <- function(n, phi, theta, qdist) {
@@ -44,7 +38,7 @@ do1rep <- function(n, phi, dist, param) {
     rdist <- getfndist(dist, param, "r")
     qdist <- getfndist(dist, param, "q")
     pdist <- getfndist(dist, param, "p")
-    x <- genData(n,numeric(0), phi, qdist)
+    x <- genData(n, numeric(0), phi, qdist)
     ks.test(x, pdist)$p.value
 }
 
@@ -54,10 +48,10 @@ n.s.n4 <- replicate(nrep, do1rep(n, -.4, "norm", n.par))
 n.s.n8 <- replicate(nrep, do1rep(n, -.8, "norm", n.par))
 
 
-g.s.8 <- replicate(nrep, do1rep(n, 0.8, "gamma", n.par))
-g.s.4 <- replicate(nrep, do1rep(n, 0.4, "gamma", n.par))
-g.s.n4 <- replicate(nrep, do1rep(n, -.4, "gamma", n.par))
-g.s.n8 <- replicate(nrep, do1rep(n, -.8, "gamma", n.par))
+g.s.8 <- replicate(nrep, do1rep(n, 0.8, "gamma", g.par))
+g.s.4 <- replicate(nrep, do1rep(n, 0.4, "gamma", g.par))
+g.s.n4 <- replicate(nrep, do1rep(n, -.4, "gamma", g.par))
+g.s.n8 <- replicate(nrep, do1rep(n, -.8, "gamma", g.par))
 
 
 
@@ -66,4 +60,38 @@ s.data <- data.frame(p = c(n.s.n8, n.s.n4, n.s.4, n.s.8,
                      dist = gl(2, nrep * 4, nrep * 8, c("normal", "gamma")),
                      rho = gl(4, nrep, nrep * 8, c(-0.8, -0.4, 0.4, 0.8)))
 
-save(s.data, file = "sim-ma.rda")
+
+### Section 3: after fixing the serial dependence with auto.arima
+
+do1rep <- function(n, phi, theta, dist, param) {
+    qdist <- getfndist(dist, param, "q")
+    x <- genData(n, phi, theta, qdist)
+    ks <- ks.test.fitted(x, dist, fit = FALSE, serial = TRUE, param = param)
+    c(ks$p.naive, ks$p.value)
+}
+
+
+n.ma.8   <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
+n.ma.4   <- t(replicate(nrep, do1rep(n, numeric(0), .4, "norm", n.par)))
+n.ma.n4   <- t(replicate(nrep, do1rep(n, numeric(0), -.4, "norm", n.par)))
+n.ma.n8   <- t(replicate(nrep, do1rep(n, numeric(0), -.8, "norm", n.par)))
+
+ss.data <-data.frame(p = c(n.ma.8, n.ma.4, n.ma.n4, n.ma.n8))
+
+## Section 4: fitted parameter and serial dependence
+
+do1rep <- function(n, phi, theta, dist, param) {
+    qdist <- getfndist(dist, param, "q")
+    x <- genData(n, phi, theta, qdist)
+    ks.f <- ks.test.fitted(x, dist, fit = TRUE, serial = FALSE, param = param)
+    ks.fs <- ks.test.fitted(x, dist, fit = TRUE, serial = TRUE, param = param)
+    c(ks.f$p.naive, ks.f$p.value, ks.fs$p.value)
+}
+
+n.8 <- t(replicate(nrep, do1rep(n, numeric(0), .8, "norm", n.par)))
+n.n8 <- t(replicate(nrep, do1rep(n, numeric(0), -.8, "norm", n.par)))
+
+
+ssf.data <- data.frame(p = c(n.8, n.n8))
+
+save(s.data, ss.data, ssf.data, file = "sim-ma.rda")
