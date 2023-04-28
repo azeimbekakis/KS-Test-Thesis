@@ -60,8 +60,8 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
         fit.arma <- forecast::auto.arima(z, ic = "aic", max.d = 0, max.D = 0, allowmean = FALSE)
         ## working arma model to preserve serial dependence
         working <- list(ar = fit.arma$model$phi, ma = fit.arma$model$theta)
-        sigma <- sqrt(tacvfARMA.my(phi = working$ar, theta = - working$ma, maxLag = 0))     
-        qdist <- getfndist(dist, param, "q")
+        sigma <- sqrt(tacvfARMA.my(phi = working$ar, theta = - working$ma, maxLag = 0))
+        ## qdist <- getfndist(dist, param, "q")
     }
     ## get observed ks-stat
     ks <- ks.test(x, pdist)
@@ -70,9 +70,8 @@ ks.test.fitted <- function(x, dist, B = 1000, fit = TRUE, serial = FALSE,
     n <- length(x)
     ## bootstrapping
     for (i in 1:B) {
-        if (serial)
-            x.b <- qdist(pnorm(stats::arima.sim(working, n = n), sd = sigma))
-        else x.b <- rdist(n)
+        xb. <- ifelse(serial,  qdist(pnorm(stats::arima.sim(working, n = n), sd = sigma)),
+                      rdist(n))
         if (fit) {
             fitted.b <- MASS::fitdistr(x.b, ddist, start = split(param, names(param)))
             pdist.b <- getfndist(dist, fitted.b$estimate, "p")
