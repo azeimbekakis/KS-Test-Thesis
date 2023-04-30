@@ -78,7 +78,7 @@ n.ma.n8   <- t(replicate(nrep, do1rep(n, numeric(0), -.8, "norm", n.par)))
 
 ss.data <-data.frame(p = c(n.ma.8, n.ma.4, n.ma.n4, n.ma.n8),
                      method = gl(2, nrep, nrep * 8, c("naive", "serial")),
-                     theta = gl(4, nrep * 2, nrep * 4, c(.8, .4, -.4, -.8)))
+                     theta = gl(4, nrep * 2, nrep * 8, c(.8, .4, -.4, -.8)))
 
 ## Section 4: fitted parameter and serial dependence
 
