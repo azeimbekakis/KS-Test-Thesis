@@ -49,22 +49,20 @@ do1rep <- function(n, rho, dist, param) {
     ks.test(x, pdist)$p.value
 }
 
-n.s.3 <- replicate(nrep, do1rep(n, 0.3, "norm", n.par))
-n.s.1 <- replicate(nrep, do1rep(n, 0.1, "norm", n.par))
-n.s.0 <- replicate(nrep, do1rep(n, numeric(0), "norm", n.par))
-n.s.n1 <- replicate(nrep, do1rep(n, -.1, "norm", n.par))
-n.s.n3 <- replicate(nrep, do1rep(n, -.3, "norm", n.par))
+n.s.4 <- replicate(nrep, do1rep(n, 0.4, "norm", n.par))
+n.s.2 <- replicate(nrep, do1rep(n, 0.2, "norm", n.par))
+n.s.n2 <- replicate(nrep, do1rep(n, -.2, "norm", n.par))
+n.s.n4 <- replicate(nrep, do1rep(n, -.4, "norm", n.par))
 
-g.s.3 <- replicate(nrep, do1rep(n, 0.3, "gamma", g.par))
-g.s.1 <- replicate(nrep, do1rep(n, 0.1, "gamma", g.par))
-g.s.0 <- replicate(nrep, do1rep(n, numeric(0), "gamma", g.par))
-g.s.n1 <- replicate(nrep, do1rep(n, -.1, "gamma", g.par))
-g.s.n3 <- replicate(nrep, do1rep(n, -.3, "gamma", g.par))
+g.s.4 <- replicate(nrep, do1rep(n, 0.4, "gamma", g.par))
+g.s.2 <- replicate(nrep, do1rep(n, 0.2, "gamma", g.par))
+g.s.n2 <- replicate(nrep, do1rep(n, -.2, "gamma", g.par))
+g.s.n4 <- replicate(nrep, do1rep(n, -.4, "gamma", g.par))
 
-s.data <- data.frame(p = c(n.s.n3, n.s.n1, n.s.1, n.s.3,
-                           g.s.n3, g.s.n1, g.s.1, g.s.3),
+s.data <- data.frame(p = c(n.s.n4, n.s.n2, n.s.2, n.s.4,
+                           g.s.n4, g.s.n2, g.s.2, g.s.4),
                      dist = gl(2, nrep * 4, nrep * 8, c("normal", "gamma")),
-                     rho = gl(4, nrep, nrep * 8, c(-0.3, -0.1, 0.1, 0.3)))
+                     rho = gl(4, nrep, nrep * 8, c(-0.4, -0.2, 0.2, 0.4)))
 
 
 ### Section 3: after fixing the serial dependence with auto.arima
