@@ -328,6 +328,7 @@ is negative, in which case, the test is conservative.
 \jy{how about removing the panels for $-0.1$ and 0.1?}
 \eds{seems like too few if those are removed. How about $\{-0.4,-0.2,0.2,0.4\}$
 or $\{-0.30,-0.15,0.15,0.30\}$? Is it easy/quick to generate the plots?} 
+\jy{Will get jobs done for $\{-0.4,-0.2,0.2,0.4\}$}
 
 \begin{figure}[tbp]
   \centering
@@ -367,6 +368,8 @@ correspond to liberal tests (consistent with what was written at the beginning
 of this section).} \jy{Need to rephrase. A distribution function higher than
   another distribution means that it has more smaller values.}
 \eds{do the edits fix the problem?}
+\jy{can we rephrase ``than excepted'' to ``than there should be'' or something
+  along the line?}
 
 A complete remedy for KS tests with serially dependent data is
 challenging. The null distribution depends on the structure of the serial
@@ -529,7 +532,8 @@ variance. Our semiparametric bootstrap procedure is as follows.
   \[
     D_n^* = \sup_x \lvert F_n^* (x) - F_{\hat\theta_n}^* (x) \rvert.
   \]
-	\eds{check placement of * in second F}
+  \eds{check placement of * in second F}
+  \jy{the start should be with hat theta from step 3}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
@@ -569,7 +573,8 @@ naively fitting parameters but not adjusting for dependence clearly deviates
 from the standard uniform distribution except in the MA(1) case.
 \jy{needs an explanation ...}
 \eds{if we had used a different MA parameter other than 0.8, would we see  
-similar behavior?} 
+similar behavior?}  \jy{yes. I have more results for other MA coefficients to
+  show when we meet.}
 Similar to Section~\ref{sec:dependence}, the working normal copula approach
 gives p-values with the desired standard uniform distribution regardless of the
 true dependence.
@@ -600,10 +605,11 @@ ARMA & naive & 0.40 & 0.66 & 0.52 & 0.78 \\
 
 Finally, we report a small study of the power of the one-sample KS test with
 unspecified parameters and serially dependent data. Using the three dependence
-models characterized by ARMA(1, 1), AR(2), and MA(1), we generated serially
+models characterized by ARMA(1, 1), AR(2), and MA(1) in the simulation settings
+in the last section, we generated serially
 dependent data with marginal distributions $N(8, 8)$ left truncated by zero and
 $\Gamma(8, 1)$. 
-\eds{same AR and MA parameters as the previous section?}
+\eds{same AR and MA parameters as the previous section?} \jy{yes; edited.}
 Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
 data has marginally a normal distribution; for data from $N(8, 8)$ left
 truncated by zero, we tested $H_0$ that the data has marginally a gamma
@@ -627,7 +633,8 @@ violated, the test is no longer accurate and remedies must be performed. In the
 case of fitted parameters, parametric and non-parametric bootstrap can restore
 the size of the test. A bias correction is required if the non-parametric form
 is used \citep{babu2004goodness}. In the case of serially dependent data, 
-a procedure using bootstrap with copulas to model dependency shows positive
+a procedure using bootstrap with the normal copula determined by an
+automatically selected ARMA model to account for dependency shows positive
 results. When both assumptions are violated, i.e., where the data has serial 
 dependence and parameters must be fitted, an adjusted copula procedure also 
 shows positive results. The tests appear effective for a variety of families of 
