@@ -11,8 +11,8 @@
 \usepackage{enumitem}
 \usepackage{setspace}
 
-\usepackage[pagewise]{lineno}
-%\linenumbers*[1]
+\usepackage[]{lineno}
+\linenumbers*[1]
 % %% patches to make lineno work better with amsmath
 \newcommand*\patchAmsMathEnvironmentForLineno[1]{%
  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
@@ -297,8 +297,7 @@ the p-values are coming from standard uniform distributions.
 
 Nonparametric bootstrap can also be used to approximate the null distribution
 of the test statistic in~\eqref{eq:ks_fitted} except that a bias correction is 
-needed
-\citep{babu2004goodness}. Details of the nonparametric bootstrap procedure are
+needed \citep{babu2004goodness}; see details of the procedure in
 in the Appendix. The results from nonparametric bootstrap are similar to those
 from the parametric bootstrap and, hence, are omitted.
 
@@ -325,11 +324,6 @@ more often than it should). The reasoning is similar when the serial dependence
 is negative, in which case, the test is conservative.
 
 
-\jy{how about removing the panels for $-0.1$ and 0.1?}
-\eds{seems like too few if those are removed. How about $\{-0.4,-0.2,0.2,0.4\}$
-or $\{-0.30,-0.15,0.15,0.30\}$? Is it easy/quick to generate the plots?} 
-\jy{Will get jobs done for $\{-0.4,-0.2,0.2,0.4\}$}
-
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{pp_s.pdf}
@@ -337,7 +331,7 @@ or $\{-0.30,-0.15,0.15,0.30\}$? Is it easy/quick to generate the plots?}
     dependence ignored and sample size $n = 200$ based on 1000
     replicates. The data have marginal distributions $N(8, 8)$ and
     $\Gamma(8, 1)$, with an AR(1) dependence structure on the standard normal
-    scale. The AR coefficients were $\psi \in \{-0.3, -0.1,  0.1,  0.3\}$.
+    scale. The AR coefficients were $\psi \in \{-0.4, -0.2,  0.2,  0.4\}$.
   }
   \label{fig:pp_s}
 \end{figure}
@@ -346,7 +340,7 @@ or $\{-0.30,-0.15,0.15,0.30\}$? Is it easy/quick to generate the plots?}
 The invalidity of the standard statistic for serially dependent data can be
 illustrated by a simple simulation study. Consider a first-order autoregressive
 or AR(1) model with marginal normal (or gamma) distribution. For each AR
-coefficient $\psi \in \{-0.3, -0.1, 0.1, 0.3\}$, we generated 1000
+coefficient $\psi \in \{-0.4, -0.2, 0.2, 0.4\}$, we generated 1000
 series of length 200. For each series, we applied the KS statistic
 in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(8, 8)$ (or 
 $\Gamma(8,1)$) marginally. The PP-plots of the p-values from $1000$ replicates 
@@ -354,13 +348,11 @@ for all the $\psi$ values are displayed in Figure~\ref{fig:pp_s}. As
 $\phi$ diverges from 0, the p-values look less likely to be generated from a 
 standard uniform distributions. Positive $\psi$ values led to p-values with a 
 distribution function higher than the standard uniform distribution function as 
-there were more smaller p-values than there should be, and 
-hence, %conservative 
+there were more smaller p-values than there should be, and hence, 
 liberal tests. Negative $\psi$ values led to p-values with a 
 distribution function lower than the standard uniform distribution as there 
-were more larger p-values than there should be, and hence, 
-%liberal 
-conservative tests. 
+were more larger p-values than there should be, and hence, conservative tests.
+
 
 A complete remedy for KS tests with serially dependent data is
 challenging. The null distribution depends on the structure of the serial
@@ -433,9 +425,8 @@ The p-value of $D_n$ is, again, approximated by the proportion of the $D_n^*$
 statistics that are greater than or equal to~$D_n$. 
 
 
-This process is semiparametric because the marginal distribution is
-parametrically specified while the dependence structure of the stationary series
-is only approximated by that of an ARMA process with normal distributions.
+This process is semiparametric because the dependence structure is specified by
+a normal copula determined by an ARMA process with normally distributed errors.
 The closer the approximation is to the truth, the better
 performance of the size of the KS test. The normal copula of the working ARMA
 process provides a wide class of dependence structures.
@@ -521,10 +512,8 @@ variance. Our semiparametric bootstrap procedure is as follows.
 \item
   Calculate bootstrap KS statistic
   \[
-    D_n^* = \sup_x \lvert F_n^* (x) - F_{\hat\theta_n}^* (x) \rvert.
+    D_n^* = \sup_x \lvert F_n^* (x) - F_{\hat\theta_n^*} (x) \rvert.
   \]
-  \eds{check placement of * in second F}
-  \jy{the start should be with hat theta from step 3}
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of the $B$ test statistics to approximate
@@ -532,9 +521,7 @@ variance. Our semiparametric bootstrap procedure is as follows.
 \end{enumerate}
 The p-value of $D_n$ is approximated by the proportion of the $D_n^*$
 statistics that are greater than or equal to~$D_n$. Compared to the algorithm in
-the last section, here we use $F_{\hat\theta_n}$ and $F_{\hat\theta_n}^*$ in
-place of the known~$F$. \eds{check placement of * in second F}
-
+the last section, here we use $F_{\hat\theta_n^*}$ in place of the known~$F$.
 
 
 \begin{figure}[tbp]
@@ -552,7 +539,7 @@ place of the known~$F$. \eds{check placement of * in second F}
   \label{fig:pp_ssf}
 \end{figure}
 
-Figure~\ref{fig:pp_ssf} shows the PP-plots resulting p-valuess of the
+Figure~\ref{fig:pp_ssf} shows the PP-plots resulting p-values of the
 procedure performed on data generated from same simulation settings as in
 Section~\ref{sec:dependence}. For comparison, we also displayed the PP-plot of
 a naive bootstrap procedure that adjusts for the unspecified parameters as in
@@ -561,11 +548,8 @@ The super naive approach that does not adjust for fitted parameters nor serial
 dependence would have double sin, so the results are not reported. 
 The p-values from
 naively fitting parameters but not adjusting for dependence clearly deviates
-from the standard uniform distribution except in the MA(1) case.
-\jy{needs an explanation ...}
-\eds{if we had used a different MA parameter other than 0.8, would we see  
-similar behavior?}  \jy{yes. I have more results for other MA coefficients to
-  show when we meet.}
+from the standard uniform distribution except in the MA(1) case, where the
+autocorrelation is nonzero with a short memory of only lag~1.
 Similar to Section~\ref{sec:dependence}, the working normal copula approach
 gives p-values with the desired standard uniform distribution regardless of the
 true dependence.
@@ -577,19 +561,19 @@ true dependence.
     distribution at significance level 0.05 when the true distribution was
     $\Gamma(8, 1)$ and $N(8, 8)$, respectively. }
 \centering
-\begin{tabular}{llrrrr}
+\begin{tabular}{ll cccc}
   \toprule
   &  & \multicolumn{2}{c}{$H_0:$ normal} &
   \multicolumn{2}{c}{$H_0$: gamma}\\
   \cmidrule(lr){3-4}\cmidrule(lr){5-6}
   Dependence & Method & $n = 100$ & $n = 200$ & $n = 100$ & $n = 200$\\
   \midrule
-ARMA & naive & 0.40 & 0.66 & 0.52 & 0.78 \\ 
-   & copula & 0.33 & 0.56 & 0.44 & 0.72 \\ 
-  AR & naive & 0.41 & 0.66 & 0.46 & 0.70 \\ 
-   & copula & 0.26 & 0.45 & 0.31 & 0.54 \\ 
-  MA & naive & 0.37 & 0.73 & 0.51 & 0.82 \\ 
-   & copula & 0.34 & 0.69 & 0.49 & 0.80 \\ 
+ARMA & naive & 0.404 & 0.656 & 0.515 & 0.779 \\ 
+ & copula & 0.330 & 0.556 & 0.442 & 0.722 \\ 
+AR & naive & 0.411 & 0.655 & 0.455 & 0.705 \\ 
+& copula & 0.261 & 0.448 & 0.313 & 0.544 \\ 
+MA & naive & 0.374 & 0.728 & 0.514 & 0.817 \\ 
+& copula & 0.343 & 0.693 & 0.487 & 0.797 \\ 
    \bottomrule
 \end{tabular}
 \end{table}
@@ -605,43 +589,58 @@ data has marginally a normal distribution; for data from $N(8, 8)$ left
 truncated by zero, we tested $H_0$ that the data has marginally a gamma
 distribution;  In both cases, no parameters were specified. Two sample sizes
 were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
-power of rejecting the null hypothesis at significance level~0.05. The tests
+power of rejecting the null hypothesis at significance level~0.05 from
+1000~replicates. The tests
 based on a working copula have substantial power in rejecting the null
 hypothesis and the power increases as sample size increases. The power from the
 naive tests where the serial dependence is ignored, although the unspecified
 parameters are accounted for (i.e., procedure from 
 Section~\ref{sec:dependence}), appear to 
 have higher power than the proposed tests, but this is not reliable since they 
-do not hold their sizes as demonstrated in the Figures. 
+do not hold their sizes as demonstrated in the Figure~\ref{fig:pp_ssf}.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-The KS test has base assumptions that the hypothesized distribution is
-completely specified and the data is independent. When these assumptions are
-violated, the test is no longer accurate and remedies must be performed. In the
-case of fitted parameters, parametric and non-parametric bootstrap can restore
-the size of the test. A bias correction is required if the non-parametric form
-is used \citep{babu2004goodness}. In the case of serially dependent data, 
-a procedure using bootstrap with the normal copula determined by an
-automatically selected ARMA model to account for dependency shows positive
-results. When both assumptions are violated, i.e., where the data has serial 
-dependence and parameters must be fitted, an adjusted copula procedure also 
-shows positive results. The tests appear effective for a variety of families of 
-distributions. The copula remedy is not a complete solution and has limitations. 
-Regardless of the true dependence, we assume an ARMA($p,q$) dependence structure. 
-Therefore, if the assumed dependence structure is a close approximation of the
-truth, the approach can work. However, if the approximation is too far from the 
-true dependence structure the approach does not completely remedy the issue. 
-As well, tests were only performed with the normal copula. It is possible that 
-other copulas could provide stronger results based on the true dependence of the 
-data.
+The three kinds of misuses of the KS test for one-sample goodness-of-fit that we
+demonstrated here are commonly seen in practice. With the aid of computing tools
+such as R, they can be easily demonstrated in classroom teaching. Practitioners
+need to be aware of the assumptions of the standard one-sample KS test that the
+hypothesized distribution is completely specified and that the data are
+independent. When these assumptions are not met, naive applications of the test
+are no longer accurate and remedies must be performed. In the
+case of fitted parameters, parametric and nonparametric bootstrap can restore
+the size of the test. The nonparametric version has long been developed too but
+is lesser known \citep{babu2004goodness}. In the case of serially dependent data,
+our semiparametric bootstrap procedure with a working dependence structure
+controlled by an automatically selected ARMA model restore the size of the test
+for a wide range of dependence structures.
+When both assumptions are violated, i.e., where the data has serial 
+dependence and the parameters must be fitted, a combination of the two
+individual remedies shows good results.
+
+
+The semiparametric bootstrap procedure with a working ARMA dependence structure
+is not a complete solution and has limitations. When the true serial dependence
+structure cannot be well approximated by an ARMA model with normally distributed
+error terms, the remedy may not restore the size of the test. The working
+dependence structure is essentially the normal copula uniquely determined by the
+ARMA model with normal errors. Some copulas are quite different from the normal
+copula. For example, extreme value copulas have tail dependence, which is not
+provided by normal copulas.
+Using a normal copula to approximate an extreme value copula may not capture the
+true serial dependence structure that is needed to restore the size of the
+test. A block version of the nonparametric bootstrap \citep{babu2004goodness},
+which avoids specification of a working dependence structure, would be more
+desirable.
+
 
 \appendix
 
 \section{Nonparametric Bootstrap for KS Test with Fitted Parameters}
 
-Using the same notations in the text, the procedure is summarized as follows
+Using the same notations in the text, the nonparametric bootstrap procedure of
+\citet{babu2004goodness} is summarized as follows
 \citep{babu2004goodness}.
 \begin{enumerate}
 \item
@@ -674,7 +673,7 @@ step~4 are different from the parametric bootstrap version.
 
 
 \end{document}
-%%% LocalWords: 
+%%% LocalWords: nonparametric semiparametric autocorrelation ARMA
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
