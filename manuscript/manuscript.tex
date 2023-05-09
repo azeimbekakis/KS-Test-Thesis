@@ -155,9 +155,7 @@ are known. \citet{lanzante2021testing} tests various strategies for dealing with
 temporal
 dependence and concludes that a test based on Monte-Carlo simulations performed
 the best. When additionally the hypothesized distribution contains unknown
-parameters, the standard KS test becomes even further
-inapplicable. Practitioners, however, may have used the test without knowing its
-limitations \citep[e.g.,][]{tuncer2019online}.
+parameters, the standard KS test becomes even further inapplicable.
 
 
 The contribution of this paper is a demonstration of misuses of the one-sample
@@ -639,9 +637,8 @@ desirable.
 
 \section{Nonparametric Bootstrap for KS Test with Fitted Parameters}
 
-Using the same notations in the text, the nonparametric bootstrap procedure of
-\citet{babu2004goodness} is summarized as follows
-\citep{babu2004goodness}.
+Using the same notations in the text, the nonparametric bootstrap procedure 
+is summarized as follows \citep{babu2004goodness}.
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
@@ -658,7 +655,7 @@ Using the same notations in the text, the nonparametric bootstrap procedure of
     D_n^* = \sup_x | \sqrt{n}\left(F_n^* (x)- F_{\hat\theta_n^*}(x)\right) - B_n(x) |.
   \]
   where $B_{n}(x) = \sqrt{n}(F_{n}(x) - F_{\hat\theta_n}(x))$ is the known
-  bias term \citep{babu2004goodness}.
+  bias term.
 \item
   Repeat the previous steps a large number $B$ times and use the empirical
   distribution of $D_n^*$ to approximate the null distribution of the observed
