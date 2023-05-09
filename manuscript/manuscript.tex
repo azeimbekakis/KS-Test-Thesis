@@ -119,8 +119,8 @@ of the KS statistic is no longer distribution free. Computing the
 exact and asymptotic distribution of $D_n$ is challenging. Fortunately, the null
 distribution of the KS statistic for discontinuous distributions has been
 efficiently addressed by \citet{dimitrova2020computing} with a
-companion R package \textsf{KSgeneral}. Although a common misuse of KS test, the
-issue with discontinuous data is not our focus.
+companion R package \textsf{KSgeneral}. Although a common misuse of the KS test, 
+the issue with discontinuous data is not our focus.
 
 
 When the hypothesized distribution~$F$ contains unspecified parameters, as is
@@ -128,7 +128,7 @@ the case in most goodness-of-fit test settings, the standard KS test is not
 applicable. \citet{steinskog2007cautionary} ``discovers'' the change in power
 when using fitted parameters and stresses caution in using the KS test in
 such ways. In fact, using fitted parameters in place of the true parameters in
-KS test has been long known to yield extremely conservative results
+the KS test has been long known to yield extremely conservative results
 \citep[e.g.,][]{lilliefors1967kolmogorov}. This problem can be solved by
 parametric bootstrap \citep{efron1985bootstrap, hall1991two}, where
 bootstrap samples of the test statistics are constructed from samples
@@ -230,7 +230,7 @@ variance (with $n$ in the denominator). This experiment was repeated 1000 times
 and the probability-probability plot (PP-plot) of the 1000 p-values are 
 displayed in the top left plot of Figure~\ref{fig:pp_f}. If the test were
 valid, the p-values would be uniformly distributed in the unit
-interval and the points in the PP plot would fall along the diagonal line. 
+interval and the points in the PP-plot would fall along the diagonal line. 
 Clearly, the distribution of the 1000 p-values are very different from what
 one would expect to see from 1000 draws from the standard uniform
 distribution.  
@@ -255,7 +255,7 @@ in the simulations are the same. Likewise, the p-value of the test
 statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
 \texttt{ks.test()} function in~R with the fitted gamma distribution as the
 hypothesized distribution using the shape and scale maximum likelihood 
-estimates. The PP plot of the p-values from 1000 replications of this 
+estimates. The PP-plot of the p-values from 1000 replications of this 
 experiment are displayed in the bottom left plot of Figure~\ref{fig:pp_f}. The
 p-values are again non-uniformly distributed due to the use of the 
 estimated parameters when specifying the null distribution.
@@ -297,7 +297,7 @@ the p-values are coming from standard uniform distributions.
 
 Nonparametric bootstrap can also be used to approximate the null distribution
 of the test statistic in~\eqref{eq:ks_fitted} except that a bias correction is 
-needed \citep{babu2004goodness}; see details of the procedure in
+needed \citep{babu2004goodness}; see details of the procedure
 in the Appendix. The results from nonparametric bootstrap are similar to those
 from the parametric bootstrap and, hence, are omitted.
 
@@ -331,7 +331,7 @@ is negative, in which case, the test is conservative.
     dependence ignored and sample size $n = 200$ based on 1000
     replicates. The data have marginal distributions $N(8, 8)$ and
     $\Gamma(8, 1)$, with an AR(1) dependence structure on the standard normal
-    scale. The AR coefficients were $\psi \in \{-0.4, -0.2,  0.2,  0.4\}$.
+    scale. The AR coefficients are $\psi \in \{-0.4, -0.2,  0.2,  0.4\}$.
   }
   \label{fig:pp_s}
 \end{figure}
@@ -344,8 +344,8 @@ coefficient $\psi \in \{-0.4, -0.2, 0.2, 0.4\}$, we generated 1000
 series of length 200. For each series, we applied the KS statistic
 in~\eqref{eq:ks_standard} to test $H_0$ that the $X_i$'s follow $N(8, 8)$ (or 
 $\Gamma(8,1)$) marginally. The PP-plots of the p-values from $1000$ replicates 
-for all the $\psi$ values are displayed in Figure~\ref{fig:pp_s}. As 
-$\phi$ diverges from 0, the p-values look less likely to be generated from a 
+for each $\psi$ value are displayed in Figure~\ref{fig:pp_s}. As 
+$\psi$ diverges from 0, the p-values look less likely to be generated from a 
 standard uniform distributions. Positive $\psi$ values led to p-values with a 
 distribution function higher than the standard uniform distribution function as 
 there were more smaller p-values than there should be, and hence, 
@@ -455,7 +455,7 @@ dependence structures were used to link variables generated from each marginal
 distribution; on the standard normal scale, they are
 ARMA(1, 1) with AR coefficient 0.5 and MA coefficient 0.3;
 AR(2) with coefficients $(0.6, 0.2)$; and
-MA(1)) with coefficient 0.8.
+MA(1) with coefficient 0.8.
 For each dependence structure and marginal distribution combination, we
 generated 1000 series of length 200.  For each series, we applied the
 semiparametric bootstrap procedure with serial
@@ -530,7 +530,7 @@ the last section, here we use $F_{\hat\theta_n^*}$ in place of the known~$F$.
   \includegraphics[width=.75\textwidth]{pp_ssf.pdf}
   \caption{PP-plots for the p-values obtained from KS test without (top) and 
 	  with (bottom)
-    serial dependence accounted for and unspecified parameters and sample size
+    serial dependence accounted for and unspecified parameters; sample size
     $n = 200$ based on
     1000 replicates. The data have marginal distributions $N(8, 8)$ and
     $\Gamma(8, 1)$. The dependence structure on the standard normal scale was
@@ -587,7 +587,7 @@ $\Gamma(8, 1)$.
 Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
 data has marginally a normal distribution; for data from $N(8, 8)$ left
 truncated by zero, we tested $H_0$ that the data has marginally a gamma
-distribution;  In both cases, no parameters were specified. Two sample sizes
+distribution.  In both cases, no parameters were specified. Two sample sizes
 were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
 power of rejecting the null hypothesis at significance level~0.05 from
 1000~replicates. The tests
@@ -595,8 +595,8 @@ based on a working copula have substantial power in rejecting the null
 hypothesis and the power increases as sample size increases. The power from the
 naive tests where the serial dependence is ignored, although the unspecified
 parameters are accounted for (i.e., procedure from 
-Section~\ref{sec:dependence}), appear to 
-have higher power than the proposed tests, but this is not reliable since they 
+Section~\ref{sec:fitted}), appear to 
+have higher power than the proposed tests, but these are not reliable since they 
 do not hold their sizes as demonstrated in the Figure~\ref{fig:pp_ssf}.
 
 \section{Conclusion}
@@ -613,7 +613,7 @@ case of fitted parameters, parametric and nonparametric bootstrap can restore
 the size of the test. The nonparametric version has long been developed too but
 is lesser known \citep{babu2004goodness}. In the case of serially dependent data,
 our semiparametric bootstrap procedure with a working dependence structure
-controlled by an automatically selected ARMA model restore the size of the test
+controlled by an automatically selected ARMA model restores the size of the test
 for a wide range of dependence structures.
 When both assumptions are violated, i.e., where the data has serial 
 dependence and the parameters must be fitted, a combination of the two
@@ -645,7 +645,7 @@ Using the same notations in the text, the nonparametric bootstrap procedure of
 \begin{enumerate}
 \item
   Draw a random sample $X_1^*,...,X_n^*$ from the empirical distribution $F_n$
-  with replacement
+  with replacement.
 \item
   Fit $F_\theta$ to $X_1^*,...,X_n^*$ and obtain estimate 
 	$\hat\theta_n^*$ of $\theta$.
