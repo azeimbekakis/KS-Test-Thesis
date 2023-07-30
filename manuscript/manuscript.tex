@@ -63,21 +63,25 @@
 \doublespace
 
 \begin{abstract}
-The Kolmogorov--Smirnov (KS) test is one of the most popular goodness-of-fit
-tests for comparing a sample with a hypothesized continuous distribution.
-Nevertheless, it has often been misused. The standard one-sample KS test applies
-to independent, continuous data with a hypothesized distribution that is
-completely specified. It is not uncommon, however, to see in the literature that
-it was applied to dependent, discrete, or rounded data, with hypothesized
-distributions containing estimated parameters. For example, it has been
+The Kolmogorov--Smirnov (KS) test is widely employed to assess the
+goodness-of-fit of a hypothezized continuous distribution to a sample.
+Despite its popularity, the test is frequently in the literature and
+practice. While originally intended for independent, continuous data with
+precisely specified hypothesized distributions, it is erroneously applied to
+scenarios with dependent, discrete, or rounded data, with hypothesized
+distributions requiring estimated parameters. For example, it has been
 ``discovered'' multiple times that the test is too conservative when the 
 hypothesized distribution has parameters that need to be estimated.
+-conservative outcome when estimating such parameters. 
 We demonstrate misuses of the one-sample KS test in
 three scenarios through simulation studies:
 1) the hypothesized distribution has unspecified parameters;
 2) the data are serially dependent; and
 3) a combination of the first two scenarios.
-For each scenario, we provide remedies for practical applications.
+For each scenario, we provide remedies for practical applications using
+appropriate bootstrap approaches.
+The whole demonstration can be used as hands-on education materials on both
+goodness-of-fit tests and bootstrap.
 
 \bigskip
 \noindent{\sc Keywords}:
@@ -85,6 +89,7 @@ nonparametric bootstrap;
 parametric bootstrap;
 working dependence.
 \end{abstract}
+
 
 \section{Introduction}
 \label{sec:intro}
@@ -115,7 +120,8 @@ hypothesized distribution that is completely specified. In practice, however, it
 has often been applied without realizing that one or more of these assumptions
 do not hold. For example, \citet{noether1963note} showed the conservativeness of
 the KS test when applied to discontinuous distributions. The null distribution
-of the KS statistic is no longer distribution free. Computing the
+of the KS statistic is no longer distribution-free and depends on the
+hypothesized distribution~$F$. Computing the
 exact and asymptotic distribution of $D_n$ is challenging. Fortunately, the null
 distribution of the KS statistic for discontinuous distributions has been
 efficiently addressed by \citet{dimitrova2020computing} with a
@@ -151,16 +157,25 @@ and that for negative dependence, the behavior is asymmetrical. For remedies,
 \citet{weiss1978modification} provides a procedure that is applicable 
 specifically for data
 modeled by the second-order auto-regressive (AR) process where the AR parameters
-are known. \citet{lanzante2021testing} tests various strategies for dealing with
-temporal
-dependence and concludes that a test based on Monte-Carlo simulations performed
-the best. When additionally the hypothesized distribution contains unknown
-parameters, the standard KS test becomes even further inapplicable.
+are known. Serial dependence affects the validity of the two-sample KS test too.
+In a recent paper on online diagnosis of performance variation in
+high-performance computing systems, for example, the authors provided no details
+about whether they accounted for serial dependence when applying the two-sample
+KS test \citep{tuncer2019online}. After comparing various strategies for dealing
+with serial dependence, \citet{lanzante2021testing} concludes that a test based
+on Monte-Carlo simulations performed the best.
+When additionally the hypothesized distribution contains unknown
+parameters, the standard KS test becomes even further inapplicable. 
+
 
 
 The contribution of this paper is a demonstration of misuses of the one-sample
-KS test in three scenarios and their remedies in practice. The scenarios are
-where:
+KS test in three scenarios and their remedies in practice. Contrary to the
+assumptions within the statistics community that anyone familiar with the
+relevant literature would be ``misusing'' the KS test, there is still a
+considerable journey ahead in educating students and practitioners from diverse
+fields on the proper utilization of the KS test and similar tests. The scenarios
+that we consider are where:
 1) the hypothesized distribution has unspecified parameters;
 2) the data are serially dependent; and
 3) a combination of the first two scenarios.
@@ -186,6 +201,7 @@ working solution. Section~\ref{sec:fittedwithdependence}
 explores the case where a combination of the first two scenarios occurs. An  
 adjusted bootstrap procedure is proposed as a working solution in this case.  
 Section~\ref{sec:conclusion} concludes with a discussion.
+
 
 \section{Unspecified Parameters}
 \label{sec:fitted}
@@ -298,8 +314,6 @@ of the test statistic in~\eqref{eq:ks_fitted} except that a bias correction is
 needed \citep{babu2004goodness}; see details of the procedure
 in the Appendix. The results from nonparametric bootstrap are similar to those
 from the parametric bootstrap and, hence, are omitted.
-
-
 
 
 \section{Serially Dependent Data}
@@ -597,7 +611,7 @@ Section~\ref{sec:fitted}), appear to
 have higher power than the proposed tests, but these are not reliable since they 
 do not hold their sizes as demonstrated in Figure~\ref{fig:pp_ssf}.
 
-\section{Conclusion}
+\section{Concluding Remarks}
 \label{sec:conclusion}
 
 The three kinds of misuses of the KS test for one-sample goodness-of-fit that we
@@ -615,11 +629,27 @@ controlled by an automatically selected ARMA model restores the size of the test
 for a wide range of dependence structures.
 When both assumptions are violated, i.e., where the data has serial 
 dependence and the parameters must be fitted, a combination of the two
-individual remedies shows good results.
+individual remedies shows good results. The misuses of the KS tset are also seen
+in practice with other goodness-of-fit tests based on the empirical distribution
+function, such as the Anderson—Darling test or the Cramér—von Mise test, which
+are known to be superior to KS in certain respects \citep{stephens2017tests}. We
+expect that similar bootstrap remedies can be developed. Statisticians living in
+an ivory tower tend to be doubt that anyone would be misusing the KS test as we
+illustrated given that such situations are very well-known in the statistics
+literature. It is our experience, however, that much effort is needed in
+propagating many knowns in the statistics community to the real wild world
+through innovative and impactful education. Such effort may be more valuable
+than developing more advanced methods that no one would use in practice.
 
 
 The semiparametric bootstrap procedure with a working ARMA dependence structure
 is not a complete solution and has limitations. When the true serial dependence
+can be well approximated by an ARMA model, the model selection process could be
+avoided by using a computationally easier and theoretically more attractive
+autoregressive sieve, i.e., autore-gressive models the order of which increases
+simultaneously with the sample size at a suitably slower rate than the sample
+size \citep[e.g.,][]{psaradakis2017distance, psaradakis2020normality}.
+When the true serial dependence
 structure cannot be well approximated by an ARMA model with normally distributed
 error terms, the remedy may not restore the size of the test. The working
 dependence structure is essentially the normal copula uniquely determined by the
