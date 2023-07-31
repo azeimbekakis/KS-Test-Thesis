@@ -1,4 +1,5 @@
-\documentclass[12pt, letterpaper, titlepage]{article}
+\documentclass[12pt, letterpaper]{article}
+%\documentclass[12pt, letterpaper, titlepage]{article}
 
 \usepackage{amsmath}
 \usepackage{booktabs}
@@ -45,34 +46,64 @@
 \newcommand{\jy}[1]{\textcolor{blue}{JY: #1}}
 \newcommand{\eds}[1]{\textcolor{red}{EDS: (#1)}}
 
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{1}
 
-\title{On Misuses of the Kolmogorov--Smirnov Test for One-Sample Goodness-of-Fit}
 
-\author{Anthony Zeimbekakis\\
+%\title{On Misuses of the Kolmogorov--Smirnov Test for One-Sample Goodness-of-Fit}
+%
+%\author{Anthony Zeimbekakis\\
+%%   \href{mailto:anthony.zeimbekakis@uconn.edu}
+%% {\nolinkurl{anthony.zeimbekakis@uconn.edu}}\\
+  %Elizabeth D.  Schifano\\
+  %Jun Yan\\[1ex]
+  %Department of Statistics, University of Connecticut\\
+%}
+%\date{}
+
+\begin{document}
+%\maketitle
+
+\if0\blind
+{
+  \title{\bf On Misuses of the Kolmogorov--Smirnov Test for One-Sample 
+	Goodness-of-Fit}
+  \author{Anthony Zeimbekakis, %\\
 %   \href{mailto:anthony.zeimbekakis@uconn.edu}
 % {\nolinkurl{anthony.zeimbekakis@uconn.edu}}\\
-  Elizabeth Schifano\\
+  Elizabeth D. Schifano, %\\
   Jun Yan\\[1ex]
   Department of Statistics, University of Connecticut\\
 }
 \date{}
+  \maketitle
+} \fi
 
-\begin{document}
-\maketitle
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf On Misuses of the Kolmogorov--Smirnov Test for One-Sample 
+	Goodness-of-Fit}
+\end{center}
+  \bigskip
+} \fi
+
 
 \doublespace
 
 \begin{abstract}
 The Kolmogorov--Smirnov (KS) test is widely employed to assess the
 goodness-of-fit of a hypothezized continuous distribution to a sample.
-Despite its popularity, the test is frequently in the literature and
+Despite its popularity, the test is frequently misused in the literature and
 practice. While originally intended for independent, continuous data with
 precisely specified hypothesized distributions, it is erroneously applied to
 scenarios with dependent, discrete, or rounded data, with hypothesized
 distributions requiring estimated parameters. For example, it has been
 ``discovered'' multiple times that the test is too conservative when the 
 hypothesized distribution has parameters that need to be estimated.
--conservative outcome when estimating such parameters. 
 We demonstrate misuses of the one-sample KS test in
 three scenarios through simulation studies:
 1) the hypothesized distribution has unspecified parameters;
@@ -90,6 +121,7 @@ parametric bootstrap;
 working dependence.
 \end{abstract}
 
+%\doublespace
 
 \section{Introduction}
 \label{sec:intro}
@@ -172,7 +204,7 @@ parameters, the standard KS test becomes even further inapplicable.
 The contribution of this paper is a demonstration of misuses of the one-sample
 KS test in three scenarios and their remedies in practice. Contrary to the
 assumptions within the statistics community that anyone familiar with the
-relevant literature would be ``misusing'' the KS test, there is still a
+relevant literature would not be ``misusing'' the KS test, there is still a
 considerable journey ahead in educating students and practitioners from diverse
 fields on the proper utilization of the KS test and similar tests. The scenarios
 that we consider are where:
@@ -634,7 +666,7 @@ in practice with other goodness-of-fit tests based on the empirical distribution
 function, such as the Anderson—Darling test or the Cramér—von Mise test, which
 are known to be superior to KS in certain respects \citep{stephens2017tests}. We
 expect that similar bootstrap remedies can be developed. Statisticians living in
-an ivory tower tend to be doubt that anyone would be misusing the KS test as we
+an ivory tower tend to doubt that anyone would be misusing the KS test as we
 illustrated given that such situations are very well-known in the statistics
 literature. It is our experience, however, that much effort is needed in
 propagating many knowns in the statistics community to the real wild world
@@ -646,9 +678,10 @@ The semiparametric bootstrap procedure with a working ARMA dependence structure
 is not a complete solution and has limitations. When the true serial dependence
 can be well approximated by an ARMA model, the model selection process could be
 avoided by using a computationally easier and theoretically more attractive
-autoregressive sieve, i.e., autore-gressive models the order of which increases
-simultaneously with the sample size at a suitably slower rate than the sample
-size \citep[e.g.,][]{psaradakis2017distance, psaradakis2020normality}.
+autoregressive sieve, i.e., a sequence of autoregressive models the order of 
+which increases
+simultaneously with the sample size although at a suitably slower rate 
+\citep[e.g.,][]{psaradakis2017distance, psaradakis2020normality}.
 When the true serial dependence
 structure cannot be well approximated by an ARMA model with normally distributed
 error terms, the remedy may not restore the size of the test. The working
