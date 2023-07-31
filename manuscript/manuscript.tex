@@ -200,7 +200,6 @@ When additionally the hypothesized distribution contains unknown
 parameters, the standard KS test becomes even further inapplicable. 
 
 
-
 The contribution of this paper is a demonstration of misuses of the one-sample
 KS test in three scenarios and their remedies in practice. Contrary to the
 assumptions within the statistics community that anyone familiar with the
@@ -661,23 +660,17 @@ controlled by an automatically selected ARMA model restores the size of the test
 for a wide range of dependence structures.
 When both assumptions are violated, i.e., where the data has serial 
 dependence and the parameters must be fitted, a combination of the two
-individual remedies shows good results. The misuses of the KS tset are also seen
-in practice with other goodness-of-fit tests based on the empirical distribution
-function, such as the Anderson—Darling test or the Cramér—von Mise test, which
-are known to be superior to KS in certain respects \citep{stephens2017tests}. We
-expect that similar bootstrap remedies can be developed. Statisticians living in
-an ivory tower tend to doubt that anyone would be misusing the KS test as we
-illustrated given that such situations are very well-known in the statistics
-literature. It is our experience, however, that much effort is needed in
-propagating many knowns in the statistics community to the real wild world
-through innovative and impactful education. Such effort may be more valuable
-than developing more advanced methods that no one would use in practice.
+individual remedies shows good results. The misuses of the KS tset also apply
+to other goodness-of-fit tests based on the empirical distribution
+function, such as the Anderson--Darling test or the Cramér-—von Mise test, which
+are known to be superior to KS in certain respects \citep{stephens2017tests}.
+Similar bootstrap remedies can be developed for these tests.
 
 
 The semiparametric bootstrap procedure with a working ARMA dependence structure
 is not a complete solution and has limitations. When the true serial dependence
 can be well approximated by an ARMA model, the model selection process could be
-avoided by using a computationally easier and theoretically more attractive
+replaced with
 autoregressive sieve, i.e., a sequence of autoregressive models the order of 
 which increases
 simultaneously with the sample size although at a suitably slower rate 
@@ -694,6 +687,15 @@ true serial dependence structure that is needed to restore the size of the
 test. A block version of the nonparametric bootstrap \citep{babu2004goodness},
 which avoids specification of a working dependence structure, would be more
 desirable.
+
+
+Statisticians living in
+an ivory tower tend to doubt that anyone would be misusing the KS test as we
+illustrated given that such situations are very well-known in the statistics
+literature. It is our experience, however, that much effort is needed in
+propagating many knowns in the statistics community to the real wild world
+through innovative and impactful education. Such effort may be more valuable
+than developing more advanced methods that few people would use in practice.
 
 
 \appendix
