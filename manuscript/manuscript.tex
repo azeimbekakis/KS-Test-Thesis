@@ -47,7 +47,7 @@
 \newcommand{\eds}[1]{\textcolor{red}{EDS: (#1)}}
 
 % NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{1}
+\newcommand{\blind}{0}
 
 
 %\title{On Misuses of the Kolmogorov--Smirnov Test for One-Sample Goodness-of-Fit}
@@ -96,7 +96,7 @@
 
 \begin{abstract}
 The Kolmogorov--Smirnov (KS) test is widely employed to assess the
-goodness-of-fit of a hypothezized continuous distribution to a sample.
+goodness-of-fit of a hypothesized continuous distribution to a sample.
 Despite its popularity, the test is frequently misused in the literature and
 practice. While originally intended for independent, continuous data with
 precisely specified hypothesized distributions, it is erroneously applied to
@@ -183,7 +183,7 @@ The standard KS test does not apply to stationary yet dependent data either. The
 distribution of the KS statistic would have a higher variance for positively
 dependent data than that derived when the data are independent because of a
 smaller effective sample size. For example, for testing normality,
-\citet{durilleul1992lack} demonstrates that a naive application of
+\citet{durilleul1992lack} demonstrate that a naive application of
 the KS statistic is too liberal for medium-to-high positive serial dependence,
 and that for negative dependence, the behavior is asymmetrical. For remedies,
 \citet{weiss1978modification} provides a procedure that is applicable 
@@ -276,7 +276,7 @@ and the probability-probability plot (PP-plot) of the 1000 p-values are
 displayed in the top left plot of Figure~\ref{fig:pp_f}. If the test were
 valid, the p-values would be uniformly distributed in the unit
 interval and the points in the PP-plot would fall along the diagonal line. 
-Clearly, the distribution of the 1000 p-values are very different from what
+Clearly, the distribution of the 1000 p-values is very different from what
 one would expect to see from 1000 draws from the standard uniform
 distribution.  
 
@@ -295,7 +295,7 @@ distribution.
 We similarly considered random samples $X_1, \ldots, X_n$ 
 generated from a gamma distribution with shape and scale parameters 8 and 1, 
 respectively ($\Gamma(8,1)$), and sample size $n=200$. These parameter values 
-were selected so that mean and variance of the normal and gamma distributions 
+were selected so that the mean and variance of the normal and gamma distributions 
 in the simulations are the same. Likewise, the p-value of the test 
 statistic~$D_n$ in~\eqref{eq:ks_fitted} was obtained by naively calling the
 \texttt{ks.test()} function in~R with the fitted gamma distribution as the
@@ -358,7 +358,7 @@ H_0: \text{$X_i$'s have marginal distribution $F$.}
 \]
 The KS statistic $D_n$ in Equation~\eqref{eq:ks_standard}
 is still a good measure of deviation from the null hypothesis. Nonetheless, the
-null distribution of $F_n$ changes when there is serial dependence.
+null distribution changes when there is serial dependence.
 When the serial dependence is
 positive, the effective sample size is less than~$n$. The test statistic
 would be stochastically greater than that obtained from independent data, 
@@ -660,7 +660,7 @@ controlled by an automatically selected ARMA model restores the size of the test
 for a wide range of dependence structures.
 When both assumptions are violated, i.e., where the data has serial 
 dependence and the parameters must be fitted, a combination of the two
-individual remedies shows good results. The misuses of the KS tset also apply
+individual remedies shows good results. The misuses of the KS test also apply
 to other goodness-of-fit tests based on the empirical distribution
 function, such as the Anderson--Darling test or the Cramér-—von Mise test, which
 are known to be superior to KS in certain respects \citep{stephens2017tests}.
@@ -697,10 +697,13 @@ propagating many knowns in the statistics community to the real wild world
 through innovative and impactful education. Such effort may be more valuable
 than developing more advanced methods that few people would use in practice.
 
+\section*{Data Availability Statement}
+An R implementation of the proposed methods will be made publicly available upon 
+publication.
 
 \appendix
 
-\section{Nonparametric Bootstrap for KS Test with Fitted Parameters}
+\section{Appendix: Nonparametric Bootstrap for KS Test with Fitted Parameters}
 
 Using the same notations in the text, the nonparametric bootstrap procedure 
 is summarized as follows \citep{babu2004goodness}.
