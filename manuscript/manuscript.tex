@@ -642,6 +642,49 @@ Section~\ref{sec:fitted}), appear to
 have higher power than the proposed tests, but these are not reliable since they 
 do not hold their sizes as demonstrated in Figure~\ref{fig:pp_ssf}.
 
+
+\section{Classroom Implementation}
+
+% Since this is a Teacher's Corner submission, I was hoping to read about how
+% these ideas have been presented in specific courses and also how students
+% reacted to this. What background did the students have? What level of detail was
+% given to them? That is, it is one thing to say "use the bootstrap" and another
+% thing to present to students, e.g., a Markdown file with all necessary code
+% included. Was that done? Were students invited to conduct their own simulations?
+% Etc.
+
+% Graduate level
+The misuses of one-sample KS test can be easily incorporated into graduate level
+classroom teaching for courses that cover parametric bootstrap. For example, at
+the University of Connecticut (UConn), JY has always included a demonstration of
+the misuse under unspecified parameters in STAT 5361, Statistical Computing. The
+catalog description of this course includes is: ``Use of computing for statistical
+problems; obtaining features of distributions, fitting models and implementing
+inference. Basic numerical methods, nonlinear statistical methods, numerical
+integration, modern simulation methods.'' Bootstrap is covered under ``modern
+simulation methods.''  The course is open to graduate students in Statistics,
+others with permission. Detailed R code and graphical illustrations available in
+the open-access course notes elucidate the distinctions between employing null
+hypotheses with and without defined parameters (accessible at:
+\url{https://jun-yan.github.io/stat-5361/boot.html#parametric-bootstrap}).
+Students were able to follow the demonstration closely, gaining a clear
+understanding of the implications of using estimated parameters within test
+statistics, and learning about the efficacy of the parametric bootstrap method
+as a corrective measure.
+
+
+Supplementary materials accompanying this paper present R code that simplifies
+the illustration of the three common misuses of the one-sample KS test in
+classrooms, whether during lectures or as part of homework assignments.
+Addressing the misuses in contexts of serial dependency necessitates familiarity
+with ARMA models in time series analysis---a prerequisite achievable by most
+statistics graduate students. While incorporating copulas to model dependency
+structures extends beyond conventional statistics curricula, it presents an
+opportunity for advanced exploration in courses focused on statistical computing
+or multivariate analysis. 
+
+% Undergraduate level (could mention AZ's undergraduate thesis)
+
 \section{Concluding Remarks}
 \label{sec:conclusion}
 
@@ -696,6 +739,7 @@ literature. It is our experience, however, that much effort is needed in
 propagating many knowns in the statistics community to the real wild world
 through innovative and impactful education. Such effort may be more valuable
 than developing more advanced methods that few people would use in practice.
+
 
 \section*{Data Availability Statement}
 An R implementation of the proposed methods will be made publicly available upon 
