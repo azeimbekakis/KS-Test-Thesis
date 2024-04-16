@@ -688,26 +688,39 @@ or multivariate analysis.
 At the undergraduate level, so far only the misuses of one-sample KS test have 
 been presented and demonstrated in a classroom setting. At UConn, ES 
 incorporated this material in STAT 3215, Applied Linear Regression in Data 
-Science, in the context of residual diagnostics and testing whether the 
-externally studentized residuals can be viewed as realizations of a standard 
-normal distribution for large samples. The catalog description of this course 
-states the following topics: ``Applied multiple 
-linear regression analysis in data science, with an emphasis on modern 
-statistical regression methods: simple linear regression and correlation 
-analysis, multiple linear regression, analysis of variance, goodness of fit, 
-comparing regression models through partial and sequential F tests, dummy 
-variables, regression assumptions and diagnostics, model selection and penalized 
-regression, prediction and model validation, principles of design of experiments, 
-one-way and two-way analysis of variance.'' Students in this course are required
+Science, as the one-sample KS test is used in residual diagnostics for testing 
+whether the externally studentized residuals can be viewed as realizations of a 
+standard normal distribution for large samples. %The catalog description of this 
+%course states the following topics: ``Applied multiple 
+%linear regression analysis in data science, with an emphasis on modern 
+%statistical regression methods: simple linear regression and correlation 
+%analysis, multiple linear regression, analysis of variance, goodness of fit, 
+%comparing regression models through partial and sequential F tests, dummy 
+%variables, regression assumptions and diagnostics, model selection and penalized 
+%regression, prediction and model validation, principles of design of experiments, 
+%one-way and two-way analysis of variance.'' 
+Students in this applied linear regression course are required
 to have taken either two semesters of introductory statistics or a 
-Calculus~2-based statistical methods course as a prerequisite.  While students 
-in the class are exposed to the bootstrap in the context of linear regression 
-models, they are not in general familiar with serially dependency.  Thus, the 
-remedies and more complicated serially dependent settings were not presented at 
-the undergraduate level.  Serial dependence is covered in other
-undergraduate courses, and in fact, the contents of this manuscript were the 
-basis of AZ's undergraduate honors thesis. All concepts are certainly within 
-reach of UConn undergraduate Statistics and Statistical Data Science majors.     
+Calculus~2-based statistical methods course as a prerequisite. In the KS 
+assignment, students were introduced to a more detailed description of the KS 
+test, and were provided R code and output for a simulation study that showed  
+KS test performance (in terms of the distribution of $p$-values) under a 
+scenario where all KS test assumptions were met (independent, continuous data 
+with precisely specified hypothesized distributions). When the scenario was 
+modified to use estimated parameters instead, the students were asked modify the 
+previous simulation code and show the resulting distribution of $p$-values. The 
+assignment is included in the Supplemental Materials. 
+
+While students in this course are exposed to the bootstrap in the 
+context of linear regression models (specifically, case resampling and residual 
+bootstrap), they are not in general familiar with serially dependency. Thus, the 
+remedies and more complicated serially dependent settings were not presented in 
+the undergraduate applied linear regression course. Serial dependence is covered 
+in other undergraduate courses, and in fact, the contents of this manuscript 
+were the basis of AZ's undergraduate honors thesis. Consequently, all 
+statistical concepts and methods employed within this paper are certainly within 
+reach of many UConn undergraduate Statistics and Statistical Data Science 
+majors.     
 
 \section{Concluding Remarks}
 \label{sec:conclusion}
