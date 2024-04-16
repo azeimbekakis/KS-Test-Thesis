@@ -1,0 +1,149 @@
+---
+title: "Misuse of Kolmogorov-Smirnov One-Sample Goodness of Fit Test"
+author: "STAT3215"
+date: "Fall 2023"
+output:
+  pdf_document:
+    extra_dependencies:
+    - amsmath
+    - amssymb
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Introduction
+The Kolmogorov-Smirnov (KS) test is one of the most popular goodness-of-fit
+tests for comparing a sample with a hypothesized parametric distribution. 
+We used this test earlier this semester (Note 5) to assess whether the 
+(externally) studentized residuals from multiple linear regression can be viewed 
+as realizations of a standard normal distribution ($N(0,1)$) for large samples 
+($n-p \gg 30$, where $n$ is the sample size and $p$ is the number of regression
+parameters in the mean function).
+
+Despite its popularity, the test is frequently misused in the literature and
+practice. While originally intended for independent, continuous data with
+precisely specified hypothesized distributions, it is erroneously applied to
+scenarios with dependent, discrete, or rounded data, with hypothesized
+distributions requiring estimated parameters. For example, it has been
+``discovered'' multiple times that the test is too conservative when the 
+hypothesized distribution has parameters that need to be estimated.  We are 
+going to explore this scenario in more detail below.  
+
+
+## KS Test Details
+
+Let $X_1, ..., X_n$ be a random sample of size $n$ from a continuous
+distribution. The null hypothesis $H_0$ is that $X_i$'s follow distribution $F$.
+Let $F_n(t) = \sum_{i=1}^n I(X_i \le t) / n$ be the empirical cumulative
+distribution function of the sample, where $I(\cdot)$ is the indicator
+function. The KS test statistic is
+$$D_n = \sqrt{n} \sup_x | F_{n}(x) - F(x) |.$$
+The asymptotic distribution of $D_n$ under $H_0$ is independent of the
+distribution $F$.  Critical values have been tabulated for large and 
+small samples alike with popular statistical software packages readily able to 
+provide associated p-values. In particular, the KS test is available as function 
+\texttt{ks.test()} in R package \textsf{stats}.
+
+This standard one-sample KS test applies to independent data with a continuous
+hypothesized distribution that is completely specified (meaning the parameters
+of the hypothesized distribution are known and not estimated). When the 
+hypothesized distribution $F$ contains unspecified parameters, as is
+the case in most goodness-of-fit test settings, the standard KS test is not
+applicable.  We will illustrate this below with a small simulation study. 
+
+## Illustration
+
+### Simulation when KS test conditions are met
+
+We first consider a simulation when the KS test conditions are met, namely, that 
+the hypothesized distribution of independent data is continuous and completely 
+specified. In this illustration, the hypothesized distribution $F$ is a normal
+distribution with both mean and variance parameters set equal to 8 ($N(8,8)$).
+
+We will evaluate the performance of the standard KS test when the null hypothesis 
+is true by repeating the following steps $B=10000$ times:
+
+1. Generate a sample of $n=200$ independent observations from a $N(8,8)$ distribution.
+
+2. Perform the standard KS test on the sample generated in Step 1 by calling the
+\texttt{ks.test()} function with known hypothesized distribution $N(8,8)$.  
+
+3. Save and store the p-value reported from Step 2.
+
+We run these steps in the code below and then plot a histogram of the resulting $B=10000$ p-values.
+
+```{r, fig.height = 3, fig.width = 3.5, fig.align = "center", fig.cap="\\label{fig:hist}Histogram of p-values when KS test conditions are met."}
+do1rep <- function(n) {
+    x <- rnorm(n, mean = 8, sd = sqrt(8))
+    ks <- ks.test(x, "pnorm", mean = 8, sd = sqrt(8))
+    ks$p.value
+}
+
+n <- 200   # sample size
+B <- 10000 # number of simulation replicates
+
+set.seed(0)  # for reproducibility
+pvals <- replicate(B, do1rep(n))
+
+hist(pvals, main="")
+```
+
+Recall that for each replication, we generated the data so that the null 
+hypothesis of the KS test is true. Because the test is being performed under the 
+appropriate conditions, the test should be valid in the sense that the resulting 
+p-values should have a continuous uniform distribution on the unit interval 
+($U(0,1)$). Indeed, the histogram in Figure \ref{fig:hist} reflects this. This 
+also means that if we set the significance level at $\alpha=0.05$ so that we
+reject $H_0$ when p-value$<\alpha$, this false rejection should happen in 
+approximately 5\% of the $B=10000$ simulations. We compute the proportion of 
+false rejections from this simulation with the code below.  
+```{r}
+mean(pvals<0.05)
+```
+
+### Assignment: Simulation when KS Conditions are NOT met
+
+We will now consider a simulation when the KS test conditions are NOT met, 
+namely, that the hypothesized distribution of independent data is continuous, 
+but the parameters of the hypothesized distribution are unknown to the 
+researcher, and are replaced with estimated values.  Your assignment is to 
+evaluate the performance of the standard KS test under this scenario.
+
+Specifically, you will modify the simulation code from the previous section to 
+perform the following four steps, repeated $B=10000$ times:
+
+1. Generate a sample of $n=200$ independent observations from a $N(8,8)$ 
+distribution.
+
+2. Estimate the sample mean, $\bar{x}$ and the sample variance, $s^2$, of the sample 
+generated in Step 1 using the \texttt{mean()} and \texttt{var()} functions, 
+respectively.  
+
+3. Perform the standard KS test on the sample generated in Step 1 by calling the
+\texttt{ks.test()} function with hypothesized distribution $N(\bar{x},s^2)$.  
+
+4. Save and store the p-value reported from Step 3.
+
+After repeating Steps 1-4 $B=10000$ times, plot a histogram of the p-values. If 
+the test remains valid when using estimated parameters in the hypothesized 
+distribution, we would expect the p-values to uniformly distribute on the unit 
+interval as they did in the first simulation (Figure \ref{fig:hist}) and that 
+the probability of false rejection of the null hypothesis is the significance 
+level $\alpha$. 
+
+Do the p-values appear uniformly distributed in the unit interval here, or is 
+the distribution skewed to the left or right?  
+
+Report the proportion of false rejections in this simulation using significance 
+level $\alpha=0.05.$  
+
+
+
+
+
+
