@@ -47,7 +47,7 @@
 \newcommand{\eds}[1]{\textcolor{red}{EDS: (#1)}}
 
 % NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{0}
+\newcommand{\blind}{1}
 
 
 %\title{On Misuses of the Kolmogorov--Smirnov Test for One-Sample Goodness-of-Fit}
@@ -598,6 +598,28 @@ gives p-values with the desired standard uniform distribution regardless of the
 true dependence.
 
 
+
+Finally, we report a small study of the power of the one-sample KS test with
+unspecified parameters and serially dependent data. Using the three dependence
+models characterized by ARMA(1, 1), AR(2), and MA(1) in the simulation settings
+in the last section, we generated serially
+dependent data with marginal distributions $N(8, 8)$ left truncated by zero and
+$\Gamma(8, 1)$. 
+Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
+data has marginally a normal distribution; for data from $N(8, 8)$ left
+truncated by zero, we tested $H_0$ that the data has marginally a gamma
+distribution.  In both cases, no parameters were specified. Two sample sizes
+were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
+power of rejecting the null hypothesis at significance level~0.05 from
+1000~replicates. The tests
+based on a working copula have substantial power in rejecting the null
+hypothesis and the power increases as sample size increases. The power from the
+naive tests where the serial dependence is ignored, although the unspecified
+parameters are accounted for (i.e., procedure from 
+Section~\ref{sec:fitted}), appear to 
+have higher power than the proposed tests, but these are not reliable since they 
+do not hold their sizes as demonstrated in Figure~\ref{fig:pp_ssf}.
+
 \begin{table}[tbp]
   \label{tab:power}
   \caption{Power of rejecting the null hypothesis of normal and gamma
@@ -621,28 +643,6 @@ MA & naive & 0.374 & 0.728 & 0.514 & 0.817 \\
 \end{tabular}
 \end{table}
 
-Finally, we report a small study of the power of the one-sample KS test with
-unspecified parameters and serially dependent data. Using the three dependence
-models characterized by ARMA(1, 1), AR(2), and MA(1) in the simulation settings
-in the last section, we generated serially
-dependent data with marginal distributions $N(8, 8)$ left truncated by zero and
-$\Gamma(8, 1)$. 
-Then, for data from $\Gamma(8, 1)$, we tested $H_0$ that the
-data has marginally a normal distribution; for data from $N(8, 8)$ left
-truncated by zero, we tested $H_0$ that the data has marginally a gamma
-distribution.  In both cases, no parameters were specified. Two sample sizes
-were considered, $n \in \{100, 200\}$. Table~\ref{tab:power} summarizes the
-power of rejecting the null hypothesis at significance level~0.05 from
-1000~replicates. The tests
-based on a working copula have substantial power in rejecting the null
-hypothesis and the power increases as sample size increases. The power from the
-naive tests where the serial dependence is ignored, although the unspecified
-parameters are accounted for (i.e., procedure from 
-Section~\ref{sec:fitted}), appear to 
-have higher power than the proposed tests, but these are not reliable since they 
-do not hold their sizes as demonstrated in Figure~\ref{fig:pp_ssf}.
-
-
 \section{Classroom Implementation}
 
 % Since this is a Teacher's Corner submission, I was hoping to read about how
@@ -653,6 +653,8 @@ do not hold their sizes as demonstrated in Figure~\ref{fig:pp_ssf}.
 % included. Was that done? Were students invited to conduct their own simulations?
 % Etc.
 
+\if0\blind
+{
 % Graduate level
 The misuses of one-sample KS test can be easily incorporated into graduate level
 classroom teaching for courses that cover parametric bootstrap. For example, at
@@ -709,7 +711,9 @@ scenario where all KS test assumptions were met (independent, continuous data
 with precisely specified hypothesized distributions). When the scenario was 
 modified to use estimated parameters instead, the students were asked modify the 
 previous simulation code and show the resulting distribution of $p$-values. The 
-assignment is included in the Supplemental Materials. 
+assignment is included in the Supplemental Materials. Students were able to
+properly simulate and correctly produce results indicating the conservative 
+nature of the test under these conditions. 
 
 While students in this course are exposed to the bootstrap in the 
 context of linear regression models (specifically, case resampling and residual 
@@ -720,7 +724,83 @@ in other undergraduate courses, and in fact, the contents of this manuscript
 were the basis of AZ's undergraduate honors thesis. Consequently, all 
 statistical concepts and methods employed within this paper are certainly within 
 reach of many UConn undergraduate Statistics and Statistical Data Science 
-majors.     
+majors. 
+} \fi
+
+\if1\blind
+{
+% Graduate level
+The misuses of one-sample KS test can be easily incorporated into graduate level
+classroom teaching for courses that cover parametric bootstrap. For example, at
+the University of XX, YY has always included a demonstration of the misuse under 
+unspecified parameters in STAT $\#\#\#\#$, XXXX. The
+catalog description of this course includes: ``Use of computing for statistical
+problems; obtaining features of distributions, fitting models and implementing
+inference. Basic numerical methods, nonlinear statistical methods, numerical
+integration, modern simulation methods.'' Bootstrap is covered under ``modern
+simulation methods.''  The course is open to graduate students in Statistics,
+others with permission. Detailed R code and graphical illustrations available in
+the open-access course notes elucidate the distinctions between employing null
+hypotheses with and without defined parameters (accessible at: 
+\textit{author YY's github website}).
+%\url{https://jun-yan.github.io/stat-5361/boot.html#parametric-bootstrap}).
+Students were able to follow the demonstration closely, gaining a clear
+understanding of the implications of using estimated parameters within test
+statistics, and learning about the efficacy of the parametric bootstrap method
+as a corrective measure.
+
+
+Supplementary materials accompanying this paper present R code that simplifies
+the illustration of the three common misuses of the one-sample KS test in
+classrooms, whether during lectures or as part of homework assignments.
+Addressing the misuses in contexts of serial dependency necessitates familiarity
+with ARMA models in time series analysis---a prerequisite achievable by most
+statistics graduate students. While incorporating copulas to model dependency
+structures extends beyond conventional statistics curricula, it presents an
+opportunity for advanced exploration in courses focused on statistical computing
+or multivariate analysis. 
+
+
+% Undergraduate level (could mention AZ's undergraduate thesis)
+At the undergraduate level, so far only the misuses of one-sample KS test have 
+been presented and demonstrated in a classroom setting. At XX, ZZ 
+incorporated this material in STAT $\#\#\#\#$, XXXX, as the one-sample KS test 
+is used in residual diagnostics for testing 
+whether the externally studentized residuals can be viewed as realizations of a 
+standard normal distribution for large samples. %The catalog description of this 
+%course states the following topics: ``Applied multiple 
+%linear regression analysis in data science, with an emphasis on modern 
+%statistical regression methods: simple linear regression and correlation 
+%analysis, multiple linear regression, analysis of variance, goodness of fit, 
+%comparing regression models through partial and sequential F tests, dummy 
+%variables, regression assumptions and diagnostics, model selection and penalized 
+%regression, prediction and model validation, principles of design of experiments, 
+%one-way and two-way analysis of variance.'' 
+Students in this applied linear regression course are required
+to have taken either two semesters of introductory statistics or a 
+Calculus~2-based statistical methods course as a prerequisite. In the KS 
+assignment, students were introduced to a more detailed description of the KS 
+test, and were provided R code and output for a simulation study that showed  
+KS test performance (in terms of the distribution of $p$-values) under a 
+scenario where all KS test assumptions were met (independent, continuous data 
+with precisely specified hypothesized distributions). When the scenario was 
+modified to use estimated parameters instead, the students were asked modify the 
+previous simulation code and show the resulting distribution of $p$-values. The 
+assignment is included in the Supplemental Materials. Students were able to
+properly simulate and correctly produce results indicating the conservative 
+nature of the test under these conditions. 
+
+While students in this course are exposed to the bootstrap in the 
+context of linear regression models (specifically, case resampling and residual 
+bootstrap), they are not in general familiar with serially dependency. Thus, the 
+remedies and more complicated serially dependent settings were not presented in 
+the undergraduate applied linear regression course. Serial dependence is covered 
+in other undergraduate courses, and in fact, the contents of this manuscript 
+were the basis of WW's undergraduate honors thesis. Consequently, all 
+statistical concepts and methods employed within this paper are certainly within 
+reach of many XX undergraduate Statistics and Data Science majors. 
+} \fi
+    
 
 \section{Concluding Remarks}
 \label{sec:conclusion}
