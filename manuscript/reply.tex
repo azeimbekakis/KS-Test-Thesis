@@ -1,0 +1,176 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{natbib}
+\usepackage{hyperref}
+
+\usepackage{listings}
+\usepackage{rotating, graphicx}
+\graphicspath{{./}, {./image/}}
+\usepackage{booktabs, natbib}
+% \usepackage{breakurl}
+% \usepackage [english]{babel}
+\usepackage{amsmath, amsbsy, amsthm, epsfig, epsf, psfrag, graphicx, 
+amssymb, enumerate}
+\usepackage{bm}
+\usepackage{multirow, multicol}
+
+\usepackage[dvipsnames]{color}
+\definecolor{darkblue}{rgb}{0.1, 0.2, 0.6}
+
+\newcommand{\jy}[1]{\textcolor{red}{JY: #1}}
+\newcommand{\eds}[1]{\textcolor{blue}{(EDS: #1)}}
+\newcommand{\mc}[1]{\textcolor{green}{(MC: #1)}}
+
+\sloppy
+
+% \usepackage{csquotes}
+% \usepackage [autostyle, english = american]{csquotes}
+% \MakeOuterQuote{"}
+
+% \usepackage{bibentry}
+\newenvironment{comment}%
+{\begin{quotation}\noindent\small\it\color{darkblue}\ignorespaces%
+}{\end{quotation}}
+
+
+\begin{document}
+
+\begin{center}
+  {\Large\bf Response to the Comments}
+\end{center}
+
+We extend our gratitude to the Editor and Associate Editor for 
+granting us the opportunity to revise this manuscript. We also want to
+express our appreciation to the reviewer for their valuable comments. 
+
+
+The manuscript has been revised accordingly with the most notable change being 
+the addition of Section 5 (Classroom Implementation). We believe this revision 
+has enhanced the both the quality and utility of this paper.
+
+
+Point-by-point responses to the comments are as follows, with the
+comments quoted in \emph{\color{darkblue} italic and blue}.
+
+\subsection*{To Associate Editor}
+
+\begin{comment}
+In this article, the author explains how the Kolmogorov-Smirnov (KS) test is 
+often misused in practice and show through simulation, that under the null 
+hypothesis the KS p-value is very likely to not have a uniform distribution if 
+the parameters are estimated from the data or when the data are serial 
+correlated. The authors also give solutions to correct the test in both of these 
+situations using the parametric or semiparametric bootstrap.
+
+
+I found the article informative and well written as the problem and proposed 
+solutions were clearly explained and demonstrated. It seemed to me there is 
+possibly enough there to warrant publishing the article. However, as it was 
+submitted to Teacher’s corner, I wanted an opinion on the value of the article
+as a teaching tool.
+
+
+Therefore, the article was reviewed by one referee who is an educator and could 
+assess the impact and usefulness on teaching (I tried for two, but that proved 
+hard to come by). This referee also found the article clear and well written, 
+but wanted the authors to include a detailed explanation of how to present
+this material to students and where/how to include it in the course material.
+
+
+It would seem that this could be taught while teaching statistical tests and 
+methods as a clear warning to students to always assess how well their data fits 
+the assumptions of the method. But how to present this? It sounds like, from the 
+referee’s opinion, that this would require significant work. One way to do this 
+is if the author included a new section dedicated to the implementing of this 
+method in the classroom. As the rest of the article seems clear and informative, 
+the rest of paper could be left mostly unchanged.
+\end{comment}
+
+
+Thank you very much for your encouraging comments and great suggestion.  
+We have now included a new section, \textit{Section 5 Classroom Implementation},
+that discusses how elements of this manuscript have been incorporated into both 
+graduate- and undergraduate-level teaching at the authors' home university. 
+ 
+
+For blinding purposes, course numbers, author initials and websites, and 
+university name have been redacted, but all this information appears in the 
+unblinded version.  In brief, this material has been covered at the graduate
+level in a statistical computing course, open to all graduate students in 
+Statistics and others with permission, that covers the bootstrap. Detailed R 
+code and graphical illustrations were provided to students in the open-access 
+course notes to elucidate the distinctions between employing null
+hypotheses with and without defined parameters.  This link is included in the 
+unblinded version of the paper. \eds{Not sure how we can blind your github 
+website for the submission unless we actually don't include it in the blinded 
+version. Could we print to PDF the relevant section of the notes and include as 
+a supplement for review purposes?} 
+
+
+Similarly at the undergraduate-level, students in an R-based applied regression 
+course were provided with an R Markdown file with simulation code in order to 
+demonstrate how the KS test fails with estimated parameters in the hypothesized 
+distribution. The R Markdown file that was provided to students is included in 
+the Supplemental Materials. This R-based applied linear regression course are 
+has the following prerequisites: two semesters of introductory statistics OR a 
+Calculus~2-based statistical methods course.
+
+
+At both the graduate and undergraduate level, students were able to follow the 
+demonstrations closely and gain a clear understanding of the implications of 
+using estimated parameters within test statistics.  At the graduate level, 
+students further were able to appreciate the efficacy of the parametric 
+bootstrap method as a corrective measure.
+
+
+
+\subsection*{To Reviewer}
+
+
+\begin{comment}
+In this paper we read about a misfit between the KS test as it was developed and 
+how it is often used in practice. The author shows, via simulation, that the KS 
+p-value does not have a uniform distribution (as it should) when H0 is true but 
+parameters are estimated from the data, nor when there is serial correlation 
+(or both). At least we see this for two settings: the normal and the gamma. The 
+problem is clearly presented, as is the solution (use of the parametric or 
+semiparametric bootstrap).
+\end{comment}
+
+
+Thank you for this encouraging comment.  
+
+
+\begin{comment}
+The figures are easy to read and convey the necessary information. (It would 
+help if Table 1 appeared on page 14, rather than page 13.)
+\end{comment}
+
+
+This is a very good point.  We have moved the location of Table 1 to be closer 
+to the end of Section 4 (page 15 in the revised manuscript).  
+
+
+\begin{comment}
+Since this is a Teacher's Corner submission, I was hoping to read about how 
+these ideas have been presented in specific courses and also how students 
+reacted to this. What background did the students have? What level of detail 
+was given to them? That is, it is one thing to say "use the bootstrap" and 
+another thing to present to students, e.g., a Markdown file with all necessary
+code included. Was that done? Were students invited to conduct their own 
+simulations? Etc.
+\end{comment} 
+
+
+Thank you for highlighting this important omission. Taking the suggestion of the 
+Associate Editor, we have now included a new section, Section 5 Classroom 
+Implementation, that discusses how elements of
+this manuscript have been incorporated into both graduate- and 
+undergraduate-level teaching at the authors' home university. 
+Please see our response to the Associate Editor for additional details. 
+
+%\bibliographystyle{chicago}
+%\bibliography{citations}
+
+
+\end{document}
