@@ -4,7 +4,8 @@
 ##'
 ##' This function is a minorly modified version of the tacvfARMA function from
 ##' package ltsa, with a bug fixed. An email was sent to the package maintainer
-##' Dr. A. I. McLeod. This function wouldn't be needed if the bug is fixed in the package.
+##' Dr. A. I. McLeod, but got no response.
+##' This function wouldn't be needed if the bug is fixed in the package.
 ##'
 ##' @note:
 ##' The MA (theta) part is of opposite sign of the stats::arima.sim function
