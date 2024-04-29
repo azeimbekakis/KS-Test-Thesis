@@ -1,6 +1,6 @@
 ---
 title: "Misuse of Kolmogorov-Smirnov One-Sample Goodness of Fit Test"
-author: "STAT3215"
+author: "STAT XXXX"
 date: "Fall 2023"
 output:
   pdf_document:

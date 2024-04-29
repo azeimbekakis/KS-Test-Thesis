@@ -1,6 +1,6 @@
 ---
 title: "Code supplement to On Misuses of the Kolmogorov–Smirnov Test for One-Sample Goodness-of-Fit"
-author: "Anthony Zeimbekakis, Elizabeth D. Schifano, Jun Yan"
+author: "Blinded"
 date: "April 24, 2024"
 ---
 
